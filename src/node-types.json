@@ -1,25 +1,34 @@
 [
   {
-    "type": "line",
+    "type": "address_type",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "array_type",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "hello",
+          "type": "pointer_addressable_array_type",
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "typed_element_array_type",
+          "named": true
+        },
+        {
+          "type": "vector_type",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "source_file",
+    "type": "backtick_quoted_string",
     "named": true,
     "fields": {},
     "children": {
@@ -27,18 +36,409 @@
       "required": false,
       "types": [
         {
-          "type": "line",
+          "type": "escape_sequence",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "hello",
+    "type": "double_quoted_string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "escape_sequence",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "fixed_point_type",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "integer_type",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "literal",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "boolean_literal",
+          "named": true
+        },
+        {
+          "type": "numeric_literal",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "numeric_constant_type",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "pointer_addressable_array_type",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "pointer_type",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "program",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "quantity_type",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "address_type",
+          "named": true
+        },
+        {
+          "type": "function_pointer_type",
+          "named": true
+        },
+        {
+          "type": "pointer_type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "scalar_type",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "bool_type",
+          "named": true
+        },
+        {
+          "type": "fixed_point_type",
+          "named": true
+        },
+        {
+          "type": "integer_type",
+          "named": true
+        },
+        {
+          "type": "numeric_constant_type",
+          "named": true
+        },
+        {
+          "type": "unit_fractional_type",
+          "named": true
+        },
+        {
+          "type": "void_type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "single_quoted_string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "escape_sequence",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "literal",
+          "named": true
+        },
+        {
+          "type": "type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string_literal",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "backtick_quoted_string",
+          "named": true
+        },
+        {
+          "type": "double_quoted_string",
+          "named": true
+        },
+        {
+          "type": "single_quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "type",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "array_type",
+          "named": true
+        },
+        {
+          "type": "quantity_type",
+          "named": true
+        },
+        {
+          "type": "scalar_type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "typed_element_array_type",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "quantity_type",
+          "named": true
+        },
+        {
+          "type": "scalar_type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "unit_fractional_type",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "vector_type",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "quantity_type",
+          "named": true
+        },
+        {
+          "type": "scalar_type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "\"",
+    "named": false
+  },
+  {
+    "type": "'",
+    "named": false
+  },
+  {
+    "type": "AA",
+    "named": false
+  },
+  {
+    "type": "AAA",
+    "named": false
+  },
+  {
+    "type": "CC",
+    "named": false
+  },
+  {
+    "type": "CCC",
+    "named": false
+  },
+  {
+    "type": "F",
+    "named": false
+  },
+  {
+    "type": "FF",
+    "named": false
+  },
+  {
+    "type": "FFF",
+    "named": false
+  },
+  {
+    "type": "Int",
+    "named": false
+  },
+  {
+    "type": "MM",
+    "named": false
+  },
+  {
+    "type": "MMM",
+    "named": false
+  },
+  {
+    "type": "PP",
+    "named": false
+  },
+  {
+    "type": "PPP",
+    "named": false
+  },
+  {
+    "type": "Real",
+    "named": false
+  },
+  {
+    "type": "S",
+    "named": false
+  },
+  {
+    "type": "SS",
+    "named": false
+  },
+  {
+    "type": "SSF",
+    "named": false
+  },
+  {
+    "type": "SSS",
+    "named": false
+  },
+  {
+    "type": "U",
+    "named": false
+  },
+  {
+    "type": "UF",
+    "named": false
+  },
+  {
+    "type": "UFFF",
+    "named": false
+  },
+  {
+    "type": "UU",
+    "named": false
+  },
+  {
+    "type": "UUU",
+    "named": false
+  },
+  {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
+    "type": "`",
+    "named": false
+  },
+  {
+    "type": "bool_type",
     "named": true
   },
   {
-    "type": "identifier",
+    "type": "boolean_literal",
     "named": true
+  },
+  {
+    "type": "comment",
+    "named": true
+  },
+  {
+    "type": "escape_sequence",
+    "named": true
+  },
+  {
+    "type": "function_pointer_type",
+    "named": true
+  },
+  {
+    "type": "numeric_literal",
+    "named": true
+  },
+  {
+    "type": "void_type",
+    "named": true
+  },
+  {
+    "type": "{}",
+    "named": false
   }
 ]

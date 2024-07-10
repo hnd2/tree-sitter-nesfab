@@ -1,0 +1,21 @@
+==================
+line comment
+==================
+
+// line comment
+
+---
+
+(comment)
+
+==================
+block comment
+==================
+
+/*
+ * block comment
+ */
+
+---
+
+(comment)

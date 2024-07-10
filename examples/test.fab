@@ -1,3 +1,17 @@
-hello foo
-hello bar
-hello baz
+1234  // Decimal
+$89AB // Hexadecimal
+%1010 // Binary
+12.34  // Decimal
+$.89AB // Hexadecimal
+%1010. // Binary
+true
+false
+true
+'\''            // An apostrophe character literal
+"Hello\nWorld!" // A multi-line string literal
+"hofajosdj 日本語"
+`\x00`
+"\u00"
+"\u0000"
+"\U0000000"
+"\U00000000"
