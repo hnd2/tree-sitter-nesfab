@@ -1,6 +1,42 @@
-fn for() U
-    expression
+switch expression
+    case expression
+    case expression
+        expression
+        break
+    case expression
+        break
+    default
+        break
+
+/*
+fn foo() U
     expression
 
-fn baz() UUU[10]
+fn bar() U
     expression
+    if expression
+        expression
+    if expression
+        expression
+        expression
+    expression
+
+    // comment
+    expression
+
+
+fn baz() U
+    do while expression
+        expression
+        expression
+        break
+
+    for expression
+    ; expression
+    ; expression
+        expression
+        if expression
+            continue
+        else
+            break
+*/

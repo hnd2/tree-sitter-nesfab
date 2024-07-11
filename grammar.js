@@ -12,16 +12,58 @@ module.exports = grammar({
   word: ($) => $.identifier,
 
   rules: {
-    program: ($) => seq(repeat($.statement)),
+    program: ($) => seq(repeat($._statement)),
 
-    statement: ($) => choice($.type, $.literal, $.function_definition),
+    _statement: ($) => choice($._simple_statement, $._compound_statement),
+    _simple_statement: ($) =>
+      choice($.expression, $.break_statement, $.continue_statement),
+    _compound_statement: ($) =>
+      choice(
+        $.if_statement,
+        $.while_statement,
+        $.for_statement,
+        $.switch_statement,
+        $.function_definition,
+      ),
 
+    identifier: ($) => /[a-zA-Z_]\w+/,
+    block: ($) => seq($.indent, repeat($._statement), $.dedent),
     expression: ($) => "expression",
 
-    function_definition: ($) =>
-      seq("fn", $.identifier, "()", $.type, $.function_body),
-    function_body: ($) => seq($.indent, $.block),
-    block: ($) => seq(repeat($.expression), $.dedent),
+    // simple statement
+    break_statement: (_) => "break",
+    continue_statement: (_) => "continue",
+
+    // compound statement
+    if_statement: ($) =>
+      seq(
+        "if",
+        $.expression,
+        $.block,
+        repeat($.else_if_clause),
+        optional($.else_clause),
+      ),
+    else_if_clause: ($) => seq("else if", $.expression, $.block),
+    else_clause: ($) => seq("else", $.block),
+    while_statement: ($) => seq(optional("do"), "while", $.expression, $.block),
+    for_statement: ($) =>
+      seq(
+        optional("do"),
+        "for",
+        optional(field("initialization", $.expression)),
+        ";",
+        optional(field("condition", $.expression)),
+        ";",
+        optional(field("iteration", $.expression)),
+        $.block,
+      ),
+    switch_statement: ($) => seq("switch", $.expression, $.switch_body),
+    switch_body: ($) =>
+      seq($.indent, repeat(choice($.case_clause, $.default_clause)), $.dedent),
+    case_clause: ($) =>
+      seq("case", field("value", $.expression), optional($.block)),
+    default_clause: ($) => seq("default", optional($.block)),
+    function_definition: ($) => seq("fn", $.identifier, "()", $.type, $.block),
 
     // literals
     literal: ($) =>
@@ -60,6 +102,36 @@ module.exports = grammar({
         $.single_quoted_string,
         $.double_quoted_string,
         $.backtick_quoted_string,
+      ),
+    single_quoted_string: ($) =>
+      seq(
+        "'",
+        repeat(choice(token.immediate(/[^'\\]+/), $.escape_sequence)),
+        "'",
+      ),
+    double_quoted_string: ($) =>
+      seq(
+        '"',
+        repeat(choice(token.immediate(/[^"\\]+/), $.escape_sequence)),
+        '"',
+      ),
+    backtick_quoted_string: ($) =>
+      seq(
+        "`",
+        repeat(choice(token.immediate(/[^`\\]+/), $.escape_sequence)),
+        "`",
+      ),
+    escape_sequence: ($) =>
+      token.immediate(
+        seq(
+          "\\",
+          choice(
+            /[0abtnvfr'"`\\\/]/,
+            /x[\da-fA-F]{2}/,
+            /u[\da-fA-F]{4}/,
+            /U[\da-fA-F]{8}/,
+          ),
+        ),
       ),
 
     // types
@@ -106,38 +178,6 @@ module.exports = grammar({
     pointer_addressable_array_type: ($) => seq("[", $.numeric_literal, "]"),
 
     // etc
-    identifier: ($) => /[a-zA-Z_]\w+/,
-    single_quoted_string: ($) =>
-      seq(
-        "'",
-        repeat(choice(token.immediate(/[^'\\]+/), $.escape_sequence)),
-        "'",
-      ),
-    double_quoted_string: ($) =>
-      seq(
-        '"',
-        repeat(choice(token.immediate(/[^"\\]+/), $.escape_sequence)),
-        '"',
-      ),
-    backtick_quoted_string: ($) =>
-      seq(
-        "`",
-        repeat(choice(token.immediate(/[^`\\]+/), $.escape_sequence)),
-        "`",
-      ),
-    escape_sequence: ($) =>
-      token.immediate(
-        seq(
-          "\\",
-          choice(
-            /[0abtnvfr'"`\\\/]/,
-            /x[\da-fA-F]{2}/,
-            /u[\da-fA-F]{4}/,
-            /U[\da-fA-F]{8}/,
-          ),
-        ),
-      ),
-
     line_continuation: (_) =>
       token(seq("\\", choice(seq(optional("\r"), "\n"), "\0"))),
     comment: (_) =>
@@ -147,48 +187,5 @@ module.exports = grammar({
           seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/"),
         ),
       ),
-
-    // _definition: ($) =>
-    //   choice(
-    //     $.function_definition,
-    //     // TODO: other kinds of definitions
-    //   ),
-
-    // function_definition: ($) =>
-    //   seq("func", $.identifier, $.parameter_list, $._type, $.block),
-
-    // parameter_list: ($) =>
-    //   seq(
-    //     "(",
-    //     // TODO: parameters
-    //     ")",
-    //   ),
-
-    // _type: ($) => choice($.primitive_type, $.array_type, $.pointer_type),
-
-    // primitive_type: ($) => choice("bool", "int"),
-    // array_type: ($) => seq("[", "]", $._type),
-    // pointer_type: ($) => seq("*", $._type),
-
-    // block: ($) => seq("{", repeat($._statement), "}"),
-
-    // _statement: ($) =>
-    //   choice(
-    //     $.return_statement,
-    //     // TODO: other kinds of statements
-    //   ),
-
-    // return_statement: ($) => seq("return", $._expression, ";"),
-
-    // _expression: ($) =>
-    //   choice(
-    //     $.identifier,
-    //     $.number,
-    //     // TODO: other kinds of expressions
-    //   ),
-
-    // identifier: ($) => /[a-z]+/,
-
-    // number: ($) => /\d+/,
   },
 });
