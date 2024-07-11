@@ -32,8 +32,62 @@
       ]
     },
     "expression": {
-      "type": "CHOICE",
-      "members": []
+      "type": "STRING",
+      "value": "expression"
+    },
+    "function_definition": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "fn"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "STRING",
+          "value": "()"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "type"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "function_body"
+        }
+      ]
+    },
+    "function_body": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "indent"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "block"
+        }
+      ]
+    },
+    "block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "expression"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "dedent"
+        }
+      ]
     },
     "literal": {
       "type": "CHOICE",
@@ -817,44 +871,6 @@
           }
         ]
       }
-    },
-    "function_definition": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "fn"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "identifier"
-        },
-        {
-          "type": "STRING",
-          "value": "()"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "type"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "block"
-        }
-      ]
-    },
-    "block": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_indent"
-        },
-        {
-          "type": "STRING",
-          "value": "bar"
-        }
-      ]
     }
   },
   "extras": [
@@ -876,11 +892,15 @@
   "externals": [
     {
       "type": "SYMBOL",
-      "name": "_indent"
+      "name": "indent"
     },
     {
       "type": "SYMBOL",
-      "name": "_dedent"
+      "name": "dedent"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "newline"
     }
   ],
   "inline": [],

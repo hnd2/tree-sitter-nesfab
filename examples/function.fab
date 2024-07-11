@@ -1,5 +1,6 @@
 fn for() U
-    bar
+    expression
+    expression
 
 fn baz() UUU[10]
-    bar
+    expression

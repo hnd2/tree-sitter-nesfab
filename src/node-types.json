@@ -45,7 +45,21 @@
   {
     "type": "block",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dedent",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "double_quoted_string",
@@ -68,7 +82,7 @@
     "fields": {}
   },
   {
-    "type": "function_definition",
+    "type": "function_body",
     "named": true,
     "fields": {},
     "children": {
@@ -77,6 +91,25 @@
       "types": [
         {
           "type": "block",
+          "named": true
+        },
+        {
+          "type": "indent",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "function_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "function_body",
           "named": true
         },
         {
@@ -460,10 +493,6 @@
     "named": false
   },
   {
-    "type": "bar",
-    "named": false
-  },
-  {
     "type": "bool_type",
     "named": true
   },
@@ -476,7 +505,15 @@
     "named": true
   },
   {
+    "type": "dedent",
+    "named": true
+  },
+  {
     "type": "escape_sequence",
+    "named": true
+  },
+  {
+    "type": "expression",
     "named": true
   },
   {
@@ -489,6 +526,10 @@
   },
   {
     "type": "identifier",
+    "named": true
+  },
+  {
+    "type": "indent",
     "named": true
   },
   {

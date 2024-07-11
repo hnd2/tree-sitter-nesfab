@@ -8,7 +8,7 @@ module.exports = grammar({
   extras: ($) => [$.comment, $.line_continuation, /\s|\r?\n/],
   inline: ($) => [],
   conflicts: ($) => [],
-  externals: ($) => [$._indent, $._dedent],
+  externals: ($) => [$.indent, $.dedent, $.newline],
   word: ($) => $.identifier,
 
   rules: {
@@ -16,7 +16,12 @@ module.exports = grammar({
 
     statement: ($) => choice($.type, $.literal, $.function_definition),
 
-    expression: ($) => choice(),
+    expression: ($) => "expression",
+
+    function_definition: ($) =>
+      seq("fn", $.identifier, "()", $.type, $.function_body),
+    function_body: ($) => seq($.indent, $.block),
+    block: ($) => seq(repeat($.expression), $.dedent),
 
     // literals
     literal: ($) =>
@@ -142,10 +147,6 @@ module.exports = grammar({
           seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/"),
         ),
       ),
-
-    function_definition: ($) => seq("fn", $.identifier, "()", $.type, $.block),
-    block: ($) => seq($._indent, "bar"),
-    // source_file: ($) => repeat($._definition),
 
     // _definition: ($) =>
     //   choice(
