@@ -43,6 +43,11 @@
     }
   },
   {
+    "type": "block",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "double_quoted_string",
     "named": true,
     "fields": {},
@@ -61,6 +66,29 @@
     "type": "fixed_point_type",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "function_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "block",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "type",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "integer_type",
@@ -212,6 +240,10 @@
       "required": true,
       "types": [
         {
+          "type": "function_definition",
+          "named": true
+        },
+        {
           "type": "literal",
           "named": true
         },
@@ -324,6 +356,10 @@
     "named": false
   },
   {
+    "type": "()",
+    "named": false
+  },
+  {
     "type": "AA",
     "named": false
   },
@@ -424,6 +460,10 @@
     "named": false
   },
   {
+    "type": "bar",
+    "named": false
+  },
+  {
     "type": "bool_type",
     "named": true
   },
@@ -440,7 +480,15 @@
     "named": true
   },
   {
+    "type": "fn",
+    "named": false
+  },
+  {
     "type": "function_pointer_type",
+    "named": true
+  },
+  {
+    "type": "identifier",
     "named": true
   },
   {

@@ -1,0 +1,5 @@
+fn for() U
+    bar
+
+fn baz() UUU[10]
+    bar
