@@ -5,11 +5,18 @@ const binaryDigits = /[01]+/;
 module.exports = grammar({
   name: "nesfab",
 
-  extras: ($) => [$.comment, /[\s\p{Zs}\uFEFF\u2028\u2029\u2060\u200B]/],
+  extras: ($) => [$.comment, $.line_continuation, /\s|\r?\n/],
+  inline: ($) => [],
+  conflicts: ($) => [],
+  externals: ($) => [],
+  word: ($) => $.identifier,
+
   rules: {
     program: ($) => seq(repeat($.statement)),
 
     statement: ($) => choice($.type, $.literal),
+
+    expression: ($) => choice(),
 
     // literals
     literal: ($) =>
@@ -51,12 +58,7 @@ module.exports = grammar({
       ),
 
     // types
-    type: ($) =>
-      choice(
-        prec(3, $.scalar_type),
-        prec(2, $.quantity_type),
-        prec(1, $.array_type),
-      ),
+    type: ($) => choice($.scalar_type, $.quantity_type, $.array_type),
     scalar_type: ($) =>
       choice(
         $.integer_type,
@@ -86,16 +88,20 @@ module.exports = grammar({
         $.pointer_addressable_array_type,
       ),
     typed_element_array_type: ($) =>
-      seq(
-        choice($.scalar_type, $.quantity_type),
-        "[",
-        optional(decimalDigits),
-        "]",
+      prec(
+        1,
+        seq(
+          choice($.scalar_type, $.quantity_type),
+          "[",
+          optional($.numeric_literal),
+          "]",
+        ),
       ),
     vector_type: ($) => seq(choice($.scalar_type, $.quantity_type), "{}"),
-    pointer_addressable_array_type: ($) => seq("[", decimalDigits, "]"),
+    pointer_addressable_array_type: ($) => seq("[", $.numeric_literal, "]"),
 
     // etc
+    identifier: ($) => /[a-zA-Z_]\w+/,
     single_quoted_string: ($) =>
       seq(
         "'",
@@ -127,6 +133,8 @@ module.exports = grammar({
         ),
       ),
 
+    line_continuation: (_) =>
+      token(seq("\\", choice(seq(optional("\r"), "\n"), "\0"))),
     comment: (_) =>
       token(
         choice(

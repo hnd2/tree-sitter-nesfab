@@ -1,5 +1,6 @@
 {
   "name": "nesfab",
+  "word": "identifier",
   "rules": {
     "program": {
       "type": "SEQ",
@@ -25,6 +26,10 @@
           "name": "literal"
         }
       ]
+    },
+    "expression": {
+      "type": "CHOICE",
+      "members": []
     },
     "literal": {
       "type": "CHOICE",
@@ -309,28 +314,16 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "PREC",
-          "value": 3,
-          "content": {
-            "type": "SYMBOL",
-            "name": "scalar_type"
-          }
+          "type": "SYMBOL",
+          "name": "scalar_type"
         },
         {
-          "type": "PREC",
-          "value": 2,
-          "content": {
-            "type": "SYMBOL",
-            "name": "quantity_type"
-          }
+          "type": "SYMBOL",
+          "name": "quantity_type"
         },
         {
-          "type": "PREC",
-          "value": 1,
-          "content": {
-            "type": "SYMBOL",
-            "name": "array_type"
-          }
+          "type": "SYMBOL",
+          "name": "array_type"
         }
       ]
     },
@@ -528,42 +521,46 @@
       ]
     },
     "typed_element_array_type": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "scalar_type"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "quantity_type"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "["
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "PATTERN",
-              "value": "\\d+"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "]"
-        }
-      ]
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "scalar_type"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "quantity_type"
+              }
+            ]
+          },
+          {
+            "type": "STRING",
+            "value": "["
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "numeric_literal"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "STRING",
+            "value": "]"
+          }
+        ]
+      }
     },
     "vector_type": {
       "type": "SEQ",
@@ -595,14 +592,18 @@
           "value": "["
         },
         {
-          "type": "PATTERN",
-          "value": "\\d+"
+          "type": "SYMBOL",
+          "name": "numeric_literal"
         },
         {
           "type": "STRING",
           "value": "]"
         }
       ]
+    },
+    "identifier": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z_]\\w+"
     },
     "single_quoted_string": {
       "type": "SEQ",
@@ -733,6 +734,48 @@
         ]
       }
     },
+    "line_continuation": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "\\"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": "\r"
+                      },
+                      {
+                        "type": "BLANK"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "\n"
+                  }
+                ]
+              },
+              {
+                "type": "STRING",
+                "value": "\u0000"
+              }
+            ]
+          }
+        ]
+      }
+    },
     "comment": {
       "type": "TOKEN",
       "content": {
@@ -778,8 +821,12 @@
       "name": "comment"
     },
     {
+      "type": "SYMBOL",
+      "name": "line_continuation"
+    },
+    {
       "type": "PATTERN",
-      "value": "[\\s\\p{Zs}\\uFEFF\\u2028\\u2029\\u2060\\u200B]"
+      "value": "\\s|\\r?\\n"
     }
   ],
   "conflicts": [],
