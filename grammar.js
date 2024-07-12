@@ -12,32 +12,126 @@ module.exports = grammar({
   word: ($) => $.identifier,
 
   rules: {
-    program: ($) => seq(repeat($._statement)),
+    program: ($) => seq(repeat(choice($._statement, $.expression))),
 
+    identifier: ($) => /[a-zA-Z_]\w+/,
+    group_identifier: ($) => seq("/", $.identifier),
+    block: ($) => seq($.indent, repeat($._statement), $.dedent),
+
+    // declaration
+    // declaration:
+
+    // expression
+    expression: ($) =>
+      choice(
+        $.primary_expression,
+        $.unary_expression,
+        $.binary_expression,
+        $.system_expression,
+        $.ppu_expression,
+        "expression",
+      ),
+    primary_expression: ($) => choice(),
+
+    unary_expression: ($) =>
+      prec.left(
+        1,
+        seq(
+          field("operator", choice("@", "&", "+", "-", "~", "!")),
+          $.expression,
+        ),
+      ),
+    binary_expression: ($) =>
+      choice(
+        ...[
+          [".", 5, "left"],
+          ["*", 10, "left"],
+          ["+", 11, "left"],
+          ["-", 11, "left"],
+          ["<-<", 12, "left"],
+          [">->", 13, "right"],
+          ["<<", 14, "left"],
+          [">>", 14, "left"],
+          ["&", 15, "left"],
+          ["^", 16, "left"],
+          ["|", 17, "left"],
+          ["<", 18, "left"],
+          ["<=", 18, "left"],
+          [">", 18, "left"],
+          [">=", 18, "left"],
+          ["==", 19, "left"],
+          ["!=", 19, "left"],
+          ["&&", 20, "left"],
+          ["||", 21, "left"],
+          ["<=<", 28, "right"],
+          [">=>", 29, "left"],
+          ["*=", 30, "right"],
+          ["+=", 30, "right"],
+          ["-=", 30, "right"],
+          ["<<=", 30, "right"],
+          [">>=", 30, "right"],
+          ["&=", 30, "right"],
+          ["^=", 30, "right"],
+          ["|=", 30, "right"],
+          ["=", 30, "right"],
+        ].map(([operator, precedence, associativity]) =>
+          (associativity == "right" ? prec.right : prec.left)(
+            precedence,
+            seq(
+              field("left", $.expression),
+              field("operator", operator),
+              field("right", $.expression),
+            ),
+          ),
+        ),
+      ),
+    system_expression: (_) =>
+      choice("SYSTEM_NTSC", "SYSTEM_PAL", "SYSTEM_DENDY", "SYSTEM_REGISTER"),
+    ppu_expression: (_) =>
+      choice(
+        "PPUCTRL",
+        "PPUMASK",
+        "PPUSTATUS",
+        "OAMADDR",
+        "OAMDATA",
+        "PPUSCROLL",
+        "PPUADDR",
+        "PPUDATA",
+        "OAMDMA",
+      ),
+
+    // statement
     _statement: ($) => choice($._simple_statement, $._compound_statement),
+
+    // simple statement
     _simple_statement: ($) =>
-      choice($.expression, $.break_statement, $.continue_statement),
+      choice(
+        $.break_statement,
+        $.continue_statement,
+        $.goto_statement,
+        // $.return_statement,
+        $.swap_statement,
+        $.fence_statement,
+      ),
+    break_statement: (_) => "break",
+    continue_statement: (_) => "continue",
+    goto_statement: ($) => seq("goto", $.identifier),
+    return_statement: ($) => seq("return", optional($.expression)),
+    swap_statement: ($) => seq("swap", $.identifier, ",", $.identifier),
+    fence_statement: (_) => "fence",
+
+    // compound statement
     _compound_statement: ($) =>
       choice(
         $.group_statement,
         $.if_statement,
         $.while_statement,
         $.for_statement,
+        $.goto_mode_statement,
+        $.label_statement,
         $.switch_statement,
         $.function_definition,
       ),
-
-    identifier: ($) => /[a-zA-Z_]\w+/,
-    group_identifier: ($) => seq("/", $.identifier),
-    block: ($) => seq($.indent, repeat($._statement), $.dedent),
-    expression: ($) => choice("expression", $.fence),
-    fence: (_) => "fence",
-
-    // simple statement
-    break_statement: (_) => "break",
-    continue_statement: (_) => "continue",
-
-    // compound statement
     group_statement: ($) =>
       seq(
         choice("vars", seq(optional("omni"), "data")),
@@ -83,9 +177,22 @@ module.exports = grammar({
     case_clause: ($) =>
       seq("case", field("value", $.expression), optional($.block)),
     default_clause: ($) => seq("default", optional($.block)),
+    goto_mode_statement: ($) =>
+      seq(
+        "goto",
+        "mode",
+        $.identifier,
+        "(",
+        // args
+        ")",
+        ":",
+        "preserves",
+        optional($.group_identifier),
+      ),
+    label_statement: ($) => seq("label", $.identifier, optional($.block)),
     function_definition: ($) =>
       seq(
-        optional($.function_keyword),
+        // optional($.function_keyword),
         "fn",
         $.identifier,
         "(",
@@ -97,7 +204,7 @@ module.exports = grammar({
         field("function_modifiers", repeat(seq(":", $.function_modifier))),
         $.block,
       ),
-    function_keyword: (_) => choice("ct", "mode", "nmi", "irq", "asm"),
+    // function_keyword: (_) => choice("ct", "mode", "nmi", "irq", "asm"),
     function_argument: ($) =>
       seq(choice($.type, seq($.type, $.group_identifier)), $.identifier),
     function_modifier: ($) =>
