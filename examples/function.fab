@@ -1,3 +1,4 @@
+/*
 switch expression
     case expression
     case expression
@@ -7,11 +8,36 @@ switch expression
         break
     default
         break
-
-/*
-fn foo() U
+*/
+fn foo(U/group p1, U p2) U
     expression
 
+vars /main_menu
+    U cursor_y
+
+vars /game
+    U player_x
+    U player_y
+
+data /levels
+    [] level1
+    [] level2
+
+omni data /levels
+    [] level1
+    [] level2
+
+
+fn foo() U
+: -inline
+: +align
+: +graphviz
+    for expression; ;
+    : -unroll
+        expression
+    //return expression
+
+/*
 fn bar() U
     expression
     if expression

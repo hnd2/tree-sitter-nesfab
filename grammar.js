@@ -19,6 +19,7 @@ module.exports = grammar({
       choice($.expression, $.break_statement, $.continue_statement),
     _compound_statement: ($) =>
       choice(
+        $.group_statement,
         $.if_statement,
         $.while_statement,
         $.for_statement,
@@ -27,14 +28,24 @@ module.exports = grammar({
       ),
 
     identifier: ($) => /[a-zA-Z_]\w+/,
+    group_identifier: ($) => seq("/", $.identifier),
     block: ($) => seq($.indent, repeat($._statement), $.dedent),
-    expression: ($) => "expression",
+    expression: ($) => choice("expression", $.fence),
+    fence: (_) => "fence",
 
     // simple statement
     break_statement: (_) => "break",
     continue_statement: (_) => "continue",
 
     // compound statement
+    group_statement: ($) =>
+      seq(
+        choice("vars", seq(optional("omni"), "data")),
+        $.group_identifier,
+        $.indent,
+        repeat(seq($.type, $.identifier)),
+        $.dedent,
+      ),
     if_statement: ($) =>
       seq(
         "if",
@@ -45,7 +56,14 @@ module.exports = grammar({
       ),
     else_if_clause: ($) => seq("else if", $.expression, $.block),
     else_clause: ($) => seq("else", $.block),
-    while_statement: ($) => seq(optional("do"), "while", $.expression, $.block),
+    while_statement: ($) =>
+      seq(
+        optional("do"),
+        "while",
+        $.expression,
+        field("loop_modifiers", repeat(seq(":", $.loop_modifier))),
+        $.block,
+      ),
     for_statement: ($) =>
       seq(
         optional("do"),
@@ -55,15 +73,60 @@ module.exports = grammar({
         optional(field("condition", $.expression)),
         ";",
         optional(field("iteration", $.expression)),
+        field("loop_modifiers", repeat(seq(":", $.loop_modifier))),
         $.block,
       ),
+    loop_modifier: (_) => choice("-unroll", "+unroll", "+unloop"),
     switch_statement: ($) => seq("switch", $.expression, $.switch_body),
     switch_body: ($) =>
       seq($.indent, repeat(choice($.case_clause, $.default_clause)), $.dedent),
     case_clause: ($) =>
       seq("case", field("value", $.expression), optional($.block)),
     default_clause: ($) => seq("default", optional($.block)),
-    function_definition: ($) => seq("fn", $.identifier, "()", $.type, $.block),
+    function_definition: ($) =>
+      seq(
+        optional($.function_keyword),
+        "fn",
+        $.identifier,
+        "(",
+        optional(
+          seq($.function_argument, repeat(seq(",", $.function_argument))),
+        ),
+        ")",
+        field("return_type", $.type),
+        field("function_modifiers", repeat(seq(":", $.function_modifier))),
+        $.block,
+      ),
+    function_keyword: (_) => choice("ct", "mode", "nmi", "irq", "asm"),
+    function_argument: ($) =>
+      seq(choice($.type, seq($.type, $.group_identifier)), $.identifier),
+    function_modifier: ($) =>
+      choice(
+        "+inline",
+        "-inline",
+        "+align",
+        "+zero_page",
+        "-zero_page",
+        "+sram",
+        "-sram",
+        "+spr_8x16",
+        "+graphviz",
+        "+info",
+        "+dpcm",
+        "+static",
+        "palette_3",
+        "palette_25",
+        "+sloppy",
+        "-sloppy",
+        "+fork_scope",
+        "+solo_interrupt",
+        seq("nmi", $.identifier),
+        seq("irq", $.identifier),
+        seq("stow", optional("omni"), $.group_identifier),
+        seq("employs", optional(choice("vars", "data")), $.group_identifier),
+        seq("preserves", $.group_identifier),
+        seq("data", $.group_identifier),
+      ),
 
     // literals
     literal: ($) =>
@@ -175,7 +238,8 @@ module.exports = grammar({
         ),
       ),
     vector_type: ($) => seq(choice($.scalar_type, $.quantity_type), "{}"),
-    pointer_addressable_array_type: ($) => seq("[", $.numeric_literal, "]"),
+    pointer_addressable_array_type: ($) =>
+      seq("[", optional($.numeric_literal), "]"),
 
     // etc
     line_continuation: (_) =>
@@ -183,7 +247,7 @@ module.exports = grammar({
     comment: (_) =>
       token(
         choice(
-          seq("//", /[^\r\n\u2028\u2029]*/),
+          seq("//", /[^\r\n]*/),
           seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/"),
         ),
       ),
