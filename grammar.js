@@ -2,116 +2,86 @@ const decimalDigits = /\d+/;
 const hexDigits = /[\da-fA-F]+/;
 const binaryDigits = /[01]+/;
 
+const PREC = {
+  unary_pointer: 4, // @
+  unary_hardware_address: 8, //&
+  unary_plus: 8, // +
+  unary_negate: 8, // -
+  unary_bitwise_not: 8, // ~
+  unary_logical_not: 8, // !
+  binary_member_access: 5, // .
+  binary_multiply: 10, // *
+  binary_add: 11, // *
+  binary_subtract: 11, // -
+  binary_rotate_left: 12, // <-<
+  binary_rotate_right: 13, // >->
+  binary_shift_left: 14, // <<
+  binary_shift_right: 14, // >>
+  binary_bitwise_and: 15, // &
+  binary_bitwise_xor: 16, // ^
+  binary_bitwize_or: 17, // |
+  binary_less_than: 18, // <
+  binary_less_than_or_equal: 18, // <=
+  binary_greater_than: 18, // >
+  binary_greater_than_or_equal: 18, // >=
+  binary_equal_to: 19, // ==
+  binary_not_equal_to: 19, // !=
+  binary_logical_and: 20, // &&
+  binary_logical_or: 21, // ||
+  binary_assign_by_rotate_left: 28, // <=<
+  binary_assign_by_rotate_right: 29, // >=>,
+  binary_assign_by_multiply: 30, // *=
+  binary_assign_by_add: 30, // +=
+  binary_assign_by_subtract: 30, // -=
+  binary_assign_by_shift_left: 30, // <<=
+  binary_assign_by_shift_right: 30, // >>=
+  binary_assign_by_bitwise_and: 30, // &=
+  binary_assign_by_bitwise_xor: 30, // ^=
+  binary_assign_by_bitwise_or: 30, // |=
+  binary_assign: 30, // =
+
+  // call: 22,
+  // subscript: 21,
+};
+
 module.exports = grammar({
   name: "nesfab",
 
   extras: ($) => [$.comment, $.line_continuation, /\s|\r?\n/],
   inline: ($) => [],
-  conflicts: ($) => [],
+  conflicts: ($) => [
+    // [$.function_definition, $.function_modifier],
+    // [$.function_definition, $._statement],
+  ],
   externals: ($) => [$.indent, $.dedent, $.newline],
   word: ($) => $.identifier,
+  // supertypes: ($) => [
+  //   $._simple_statement,
+  //   $._compound_statement,
+  //   $.expression,
+  //   $.primary_expression,
+  // ],
 
   rules: {
-    program: ($) => seq(repeat(choice($._statement, $.expression))),
+    module: ($) => repeat($._statement),
 
     identifier: ($) => /[a-zA-Z_]\w+/,
     group_identifier: ($) => seq("/", $.identifier),
     block: ($) => seq($.indent, repeat($._statement), $.dedent),
-
-    // declaration
-    // declaration:
-
-    // expression
-    expression: ($) =>
-      choice(
-        $.primary_expression,
-        $.unary_expression,
-        $.binary_expression,
-        $.system_expression,
-        $.ppu_expression,
-        "expression",
-      ),
-    primary_expression: ($) => choice(),
-
-    unary_expression: ($) =>
-      prec.left(
-        1,
-        seq(
-          field("operator", choice("@", "&", "+", "-", "~", "!")),
-          $.expression,
-        ),
-      ),
-    binary_expression: ($) =>
-      choice(
-        ...[
-          [".", 5, "left"],
-          ["*", 10, "left"],
-          ["+", 11, "left"],
-          ["-", 11, "left"],
-          ["<-<", 12, "left"],
-          [">->", 13, "right"],
-          ["<<", 14, "left"],
-          [">>", 14, "left"],
-          ["&", 15, "left"],
-          ["^", 16, "left"],
-          ["|", 17, "left"],
-          ["<", 18, "left"],
-          ["<=", 18, "left"],
-          [">", 18, "left"],
-          [">=", 18, "left"],
-          ["==", 19, "left"],
-          ["!=", 19, "left"],
-          ["&&", 20, "left"],
-          ["||", 21, "left"],
-          ["<=<", 28, "right"],
-          [">=>", 29, "left"],
-          ["*=", 30, "right"],
-          ["+=", 30, "right"],
-          ["-=", 30, "right"],
-          ["<<=", 30, "right"],
-          [">>=", 30, "right"],
-          ["&=", 30, "right"],
-          ["^=", 30, "right"],
-          ["|=", 30, "right"],
-          ["=", 30, "right"],
-        ].map(([operator, precedence, associativity]) =>
-          (associativity == "right" ? prec.right : prec.left)(
-            precedence,
-            seq(
-              field("left", $.expression),
-              field("operator", operator),
-              field("right", $.expression),
-            ),
-          ),
-        ),
-      ),
-    system_expression: (_) =>
-      choice("SYSTEM_NTSC", "SYSTEM_PAL", "SYSTEM_DENDY", "SYSTEM_REGISTER"),
-    ppu_expression: (_) =>
-      choice(
-        "PPUCTRL",
-        "PPUMASK",
-        "PPUSTATUS",
-        "OAMADDR",
-        "OAMDATA",
-        "PPUSCROLL",
-        "PPUADDR",
-        "PPUDATA",
-        "OAMDMA",
-      ),
-
-    // statement
     _statement: ($) => choice($._simple_statement, $._compound_statement),
 
     // simple statement
     _simple_statement: ($) =>
       choice(
+        $.expression,
         $.break_statement,
         $.continue_statement,
         $.goto_statement,
         // $.return_statement,
         $.swap_statement,
         $.fence_statement,
+        $.nmi_statement,
+        // $.irq_statement,
       ),
     break_statement: (_) => "break",
     continue_statement: (_) => "continue",
@@ -119,6 +89,8 @@ module.exports = grammar({
     return_statement: ($) => seq("return", optional($.expression)),
     swap_statement: ($) => seq("swap", $.identifier, ",", $.identifier),
     fence_statement: (_) => "fence",
+    nmi_statement: (_) => "nmi",
+    irq_statement: ($) => seq("irq", optional($.expression)),
 
     // compound statement
     _compound_statement: ($) =>
@@ -192,19 +164,24 @@ module.exports = grammar({
     label_statement: ($) => seq("label", $.identifier, optional($.block)),
     function_definition: ($) =>
       seq(
-        // optional($.function_keyword),
-        "fn",
+        choice(
+          "fn",
+          seq("ct", optional("fn")),
+          "mode",
+          // "nmi",
+          // "irq"
+        ),
         $.identifier,
         "(",
-        optional(
-          seq($.function_argument, repeat(seq(",", $.function_argument))),
-        ),
+        optional(commaSeparated($.function_argument)),
         ")",
-        field("return_type", $.type),
-        field("function_modifiers", repeat(seq(":", $.function_modifier))),
+        optional(field("return_type", $.type)),
+        optional(
+          field("function_modifiers", repeat(seq(":", $.function_modifier))),
+        ),
         $.block,
       ),
-    // function_keyword: (_) => choice("ct", "mode", "nmi", "irq", "asm"),
+    // asm_function_definition: ($) =>
     function_argument: ($) =>
       seq(choice($.type, seq($.type, $.group_identifier)), $.identifier),
     function_modifier: ($) =>
@@ -235,9 +212,103 @@ module.exports = grammar({
         seq("data", $.group_identifier),
       ),
 
+    // expression
+    expression: ($) =>
+      choice(
+        $.primary_expression,
+        $.unary_expression,
+        $.binary_expression,
+        $.hardware_expression,
+        $.call,
+      ),
+    primary_expression: ($) =>
+      choice($.identifier, $.literal, $.subscript_expression),
+    unary_expression: ($) =>
+      choice(
+        ...[
+          ["@", PREC.unary_pointer],
+          ["&", PREC.unary_hardware_address],
+          ["+", PREC.unary_plus],
+          ["-", PREC.unary_negate],
+          ["~", PREC.unary_bitwise_not],
+          ["!", PREC.unary_logical_not],
+        ].map(([operator, precedence]) =>
+          prec.left(precedence, seq(field("operator", operator), $.expression)),
+        ),
+      ),
+    binary_expression: ($) =>
+      choice(
+        ...[
+          [".", PREC.binary_member_access, "left"],
+          ["*", PREC.binary_multiply, "left"],
+          ["+", PREC.binary_add, "left"],
+          ["-", PREC.binary_subtract, "left"],
+          ["<-<", PREC.binary_rotate_left, "left"],
+          [">->", PREC.binary_rotate_right, "right"],
+          ["<<", PREC.binary_shift_left, "left"],
+          [">>", PREC.binary_shift_right, "left"],
+          ["&", PREC.binary_bitwise_and, "left"],
+          ["^", PREC.binary_bitwise_xor, "left"],
+          ["|", PREC.binary_bitwize_or, "left"],
+          ["<", PREC.binary_less_than, "left"],
+          ["<=", PREC.binary_less_than_or_equal, "left"],
+          [">", PREC.binary_greater_than, "left"],
+          [">=", PREC.binary_greater_than_or_equal, "left"],
+          ["==", PREC.binary_equal_to, "left"],
+          ["!=", PREC.binary_not_equal_to, "left"],
+          ["&&", PREC.binary_logical_and, "left"],
+          ["||", PREC.binary_logical_or, "left"],
+          ["<=<", PREC.binary_assign_by_rotate_left, "right"],
+          [">=>", PREC.binary_assign_by_rotate_right, "left"],
+          ["*=", PREC.binary_assign_by_multiply, "right"],
+          ["+=", PREC.binary_assign_by_add, "right"],
+          ["-=", PREC.binary_assign_by_subtract, "right"],
+          ["<<=", PREC.binary_assign_by_shift_left, "right"],
+          [">>=", PREC.binary_assign_by_shift_right, "right"],
+          ["&=", PREC.binary_assign_by_bitwise_and, "right"],
+          ["^=", PREC.binary_assign_by_bitwise_xor, "right"],
+          ["|=", PREC.binary_assign_by_bitwise_or, "right"],
+          ["=", PREC.binary_assign, "right"],
+        ].map(([operator, precedence, associativity]) =>
+          (associativity == "right" ? prec.right : prec.left)(
+            precedence,
+            seq(
+              field("left", $.expression),
+              field("operator", operator),
+              field("right", $.expression),
+            ),
+          ),
+        ),
+      ),
+    subscript_expression: ($) =>
+      seq(
+        $.expression,
+        choice($.u_indexed_expression, $.uu_indexed_expression),
+      ),
+    u_indexed_expression: ($) =>
+      seq("[", optional(commaSeparated($.primary_expression)), "]"),
+    uu_indexed_expression: ($) =>
+      seq("{", optional(commaSeparated($.primary_expression)), "}"),
+    hardware_expression: ($) =>
+      seq(
+        $.uu_indexed_expression,
+        "(",
+        commaSeparated($.primary_expression),
+        ")",
+      ),
+    call: ($) => seq($.primary_expression, $.parameters),
+    parameters: ($) =>
+      seq("(", optional(commaSeparated($.primary_expression)), ")"),
+
     // literals
     literal: ($) =>
-      choice($.boolean_literal, $.numeric_literal, $.string_literal),
+      choice(
+        $.boolean_literal,
+        $.numeric_literal,
+        $.string_literal,
+        $.system_literal,
+        $.ppu_literal,
+      ),
     boolean_literal: (_) => token(choice("true", "false")),
     numeric_literal: (_) => {
       const decimalLiteral = seq(
@@ -303,6 +374,20 @@ module.exports = grammar({
           ),
         ),
       ),
+    system_literal: (_) =>
+      choice("SYSTEM_NTSC", "SYSTEM_PAL", "SYSTEM_DENDY", "SYSTEM_REGISTER"),
+    ppu_literal: (_) =>
+      choice(
+        "PPUCTRL",
+        "PPUMASK",
+        "PPUSTATUS",
+        "OAMADDR",
+        "OAMDATA",
+        "PPUSCROLL",
+        "PPUADDR",
+        "PPUDATA",
+        "OAMDMA",
+      ),
 
     // types
     type: ($) => choice($.scalar_type, $.quantity_type, $.array_type),
@@ -335,14 +420,11 @@ module.exports = grammar({
         $.pointer_addressable_array_type,
       ),
     typed_element_array_type: ($) =>
-      prec(
-        1,
-        seq(
-          choice($.scalar_type, $.quantity_type),
-          "[",
-          optional($.numeric_literal),
-          "]",
-        ),
+      seq(
+        choice($.scalar_type, $.quantity_type),
+        "[",
+        optional($.numeric_literal),
+        "]",
       ),
     vector_type: ($) => seq(choice($.scalar_type, $.quantity_type), "{}"),
     pointer_addressable_array_type: ($) =>
@@ -360,3 +442,7 @@ module.exports = grammar({
       ),
   },
 });
+
+function commaSeparated(rule) {
+  return seq(rule, repeat(seq(",", rule)));
+}
