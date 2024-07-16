@@ -18,8 +18,12 @@ fn play_sound()
     {$400B}(pitch.b & %111)
 
 mode main()
-    {$2000}(%10000000)
     while true
         pitch *= 1.01
         play_sound()
         nmi
+
+pitch.a = 2
+x = @paa{1000}
+first = read UU(ptr)
+write UU(ptr, $1234)
