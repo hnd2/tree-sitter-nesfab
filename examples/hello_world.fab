@@ -18,6 +18,7 @@ ct fn play_sound()
     {$4008}($FF)
     {$400A}(pitch.a)
     {$400B}(pitch.b & %111)
+    break
 
 mode main()
     while true

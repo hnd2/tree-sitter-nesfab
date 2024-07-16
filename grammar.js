@@ -92,8 +92,8 @@ module.exports = grammar({
 
     expression_statement: ($) =>
       choice($.expression, $.assignment, $.augumented_assignment),
-    break_statement: (_) => "break",
-    continue_statement: (_) => "continue",
+    break_statement: (_) => prec.left("break"),
+    continue_statement: (_) => prec.left("continue"),
     goto_statement: ($) => seq("goto", $.identifier),
     return_statement: ($) => seq("return", optional($.expression)),
     swap_statement: ($) =>

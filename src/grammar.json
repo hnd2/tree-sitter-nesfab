@@ -168,12 +168,20 @@
       ]
     },
     "break_statement": {
-      "type": "STRING",
-      "value": "break"
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "STRING",
+        "value": "break"
+      }
     },
     "continue_statement": {
-      "type": "STRING",
-      "value": "continue"
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "STRING",
+        "value": "continue"
+      }
     },
     "goto_statement": {
       "type": "SEQ",
