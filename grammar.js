@@ -1,6 +1,7 @@
 const decimalDigits = /\d+/;
 const hexDigits = /[\da-fA-F]+/;
 const binaryDigits = /[01]+/;
+
 const PREC = {
   unary_pointer: 4, // @
   unary_hardware_address: 8, //&
@@ -44,25 +45,11 @@ module.exports = grammar({
   name: "nesfab",
 
   extras: ($) => [$.comment, $.line_continuation, /\s|\r?\n/],
-  inline: ($) => [
-    // $._simple_statement,
-    // $._compound_statement,
-    // $.indent,
-    // $.dedent,
-    // $.newline,
-  ],
-  conflicts: ($) => [
-    // [$.function_definition, $.function_modifier],
-    // [$.function_definition, $._statement],
-  ],
-  externals: ($) => [$.indent, $.dedent, $.newline],
+  inline: ($) => [],
+  conflicts: ($) => [],
+  externals: ($) => [$._indent, $._dedent, $._newline],
   word: ($) => $.identifier,
-  // supertypes: ($) => [
-  //   $._simple_statement,
-  //   $._compound_statement,
-  //   $.expression,
-  //   $.primary_expression,
-  // ],
+  supertypes: ($) => [],
 
   rules: {
     module: ($) => repeat($._statement),
@@ -71,7 +58,7 @@ module.exports = grammar({
     group_identifier: ($) => seq("/", $.identifier),
     _statement: ($) => choice($._simple_statements, $._compound_statement),
 
-    _simple_statements: ($) => seq($._simple_statement, $.newline),
+    _simple_statements: ($) => seq($._simple_statement, $._newline),
     _simple_statement: ($) =>
       choice(
         $.expression_statement,
@@ -391,11 +378,7 @@ module.exports = grammar({
         seq(
           "file",
           "(",
-          field(
-            "target",
-            // choice("chr", "raw", "fmt", "pbz", "donut", "rlz")
-            $.identifier,
-          ),
+          field("target", $.identifier),
           ",",
           $.string_literal,
           ")",
@@ -405,15 +388,15 @@ module.exports = grammar({
 
     // compound statement
     variable_definition_block: ($) =>
-      seq($.indent, repeat(seq($.variable_definition, $.newline)), $.dedent),
-    statement_block: ($) => seq($.indent, repeat($._statement), $.dedent),
+      seq($._indent, repeat(seq($.variable_definition, $._newline)), $._dedent),
+    statement_block: ($) => seq($._indent, repeat($._statement), $._dedent),
     variable_definition: ($) =>
       seq(
         optional("ct"),
         $.type,
         $.identifier,
         optional(seq("=", field("value", $.expression))),
-        $.newline,
+        $._newline,
       ),
     struct_definition: ($) =>
       seq("struct", $.identifier, $.variable_definition_block),
@@ -433,9 +416,9 @@ module.exports = grammar({
         optional($.numeric_literal),
         "]",
         $.identifier,
-        $.indent,
+        $._indent,
         repeat(choice($.typed_data, $.untyped_data)),
-        $.dedent,
+        $._dedent,
       ),
     typed_data: ($) => seq($.type, "(", commaSep1($.numeric_literal), ")"),
     untyped_data: ($) => seq("(", ")"),
@@ -450,7 +433,7 @@ module.exports = grammar({
         ")",
       ),
     // chrrom_definition: ($) =>
-    //   seq("chrrom", $.numeric_literal, $.indent, repeat(), $.dedent),
+    //   seq("chrrom", $.numeric_literal, $._indent, repeat(), $._dedent),
     function_definition: ($) =>
       seq(
         choice(seq(optional("ct"), "fn"), "mode", "nmi", "irq"),
@@ -498,9 +481,9 @@ module.exports = grammar({
       seq(
         "switch",
         $.expression,
-        $.indent,
+        $._indent,
         repeat(choice($.case_clause, $.default_clause)),
-        $.dedent,
+        $._dedent,
       ),
     case_clause: ($) =>
       seq("case", field("value", $.expression), optional($.statement_block)),

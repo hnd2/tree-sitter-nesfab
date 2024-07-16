@@ -950,10 +950,6 @@
           "named": true
         },
         {
-          "type": "newline",
-          "named": true
-        },
-        {
           "type": "nmi_statement",
           "named": true
         },
@@ -1211,7 +1207,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "break_statement",
@@ -1223,10 +1219,6 @@
         },
         {
           "type": "continue_statement",
-          "named": true
-        },
-        {
-          "type": "dedent",
           "named": true
         },
         {
@@ -1262,19 +1254,11 @@
           "named": true
         },
         {
-          "type": "indent",
-          "named": true
-        },
-        {
           "type": "irq_statement",
           "named": true
         },
         {
           "type": "label_statement",
-          "named": true
-        },
-        {
-          "type": "newline",
           "named": true
         },
         {
@@ -1393,19 +1377,11 @@
           "named": true
         },
         {
-          "type": "dedent",
-          "named": true
-        },
-        {
           "type": "default_clause",
           "named": true
         },
         {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "indent",
           "named": true
         }
       ]
@@ -1589,10 +1565,6 @@
           "named": true
         },
         {
-          "type": "newline",
-          "named": true
-        },
-        {
           "type": "type",
           "named": true
         }
@@ -1605,20 +1577,8 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
-        {
-          "type": "dedent",
-          "named": true
-        },
-        {
-          "type": "indent",
-          "named": true
-        },
-        {
-          "type": "newline",
-          "named": true
-        },
         {
           "type": "variable_definition",
           "named": true
@@ -2151,10 +2111,6 @@
     "named": false
   },
   {
-    "type": "dedent",
-    "named": true
-  },
-  {
     "type": "default",
     "named": false
   },
@@ -2207,10 +2163,6 @@
     "named": false
   },
   {
-    "type": "indent",
-    "named": true
-  },
-  {
     "type": "irq",
     "named": false
   },
@@ -2225,10 +2177,6 @@
   {
     "type": "mode",
     "named": false
-  },
-  {
-    "type": "newline",
-    "named": true
   },
   {
     "type": "nmi",
