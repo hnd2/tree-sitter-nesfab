@@ -2,10 +2,10 @@
 - [ ] grammar
   - [ ] compound statement
   - [ ] asm
-  - [ ] function
-    - [ ] ct
-    - [ ] nmi
-    - [ ] irq
+  - [ ] data, chrrom, byte block
+  - [ ] macro
   - [ ] mapfab
+  - [ ] audio
+  - [ ] modifier
 
 - [ ] highlight

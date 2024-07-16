@@ -37,7 +37,6 @@ const PREC = {
   binary_assign_by_bitwise_xor: 30, // ^=
   binary_assign_by_bitwise_or: 30, // |=
   binary_assign: 30, // =
-
   call: 5,
 };
 
@@ -71,7 +70,6 @@ module.exports = grammar({
     identifier: (_) => /[_\p{XID_Start}][_\p{XID_Continue}]*/,
     group_identifier: ($) => seq("/", $.identifier),
     _statement: ($) => choice($._simple_statements, $._compound_statement),
-    block: ($) => seq($.indent, repeat($._statement), $.dedent),
 
     _simple_statements: ($) => seq($._simple_statement, $.newline),
     _simple_statement: ($) =>
@@ -90,16 +88,19 @@ module.exports = grammar({
       ),
     _compound_statement: ($) =>
       choice(
-        "aa",
-        //       $.group_statement,
-        //       $.if_statement,
-        //       $.while_statement,
-        //       $.for_statement,
-        //       $.goto_mode_statement,
-        //       $.label_statement,
-        //       $.switch_statement,
-        //       $.function_definition,
-        // $.variable_definition
+        $.variable_definition,
+        $.struct_definition,
+        $.vars_definition,
+        // $.data_definition,
+        $.charmap_definition,
+        // $.chrrom_definition,
+        $.function_definition,
+        $.if_statement,
+        $.while_statement,
+        $.for_statement,
+        $.switch_statement,
+        $.goto_mode_statement,
+        $.label_statement,
       ),
 
     expression_statement: ($) =>
@@ -120,13 +121,15 @@ module.exports = grammar({
     irq_statement: ($) => seq("irq", optional($.boolean_literal)),
 
     // expression
-    expression: ($) => choice($.primary_expression, $.comparison_operator),
+    expression: ($) =>
+      choice($.primary_expression, $.comparison_operator, $.file_expression),
 
     primary_expression: ($) =>
       choice(
         $.identifier,
         $.boolean_literal,
         $.numeric_literal,
+        $.character_literal,
         $.string_literal,
         $.system_literal,
         $.ppu_literal,
@@ -173,18 +176,10 @@ module.exports = grammar({
 
       return token(choice(decimalLiteral, binaryLiteral, hexLiteral));
     },
+    character_literal: ($) =>
+      seq("'", choice(token.immediate(/[^'\\]+/), $.escape_sequence), "'"),
     string_literal: ($) =>
-      choice(
-        $.single_quoted_string,
-        $.double_quoted_string,
-        $.backtick_quoted_string,
-      ),
-    single_quoted_string: ($) =>
-      seq(
-        "'",
-        repeat(choice(token.immediate(/[^'\\]+/), $.escape_sequence)),
-        "'",
-      ),
+      choice($.double_quoted_string, $.backtick_quoted_string),
     double_quoted_string: ($) =>
       seq(
         '"',
@@ -390,115 +385,169 @@ module.exports = grammar({
       ),
     ready: ($) => "ready",
     nmi_counter: ($) => "nmi_counter",
+    file_expression: ($) =>
+      prec.left(
+        PREC.call,
+        seq(
+          "file",
+          "(",
+          field(
+            "target",
+            // choice("chr", "raw", "fmt", "pbz", "donut", "rlz")
+            $.identifier,
+          ),
+          ",",
+          $.string_literal,
+          ")",
+          optional($.modifier),
+        ),
+      ),
 
-    //   // compound statement
-    //   group_statement: ($) =>
-    //     seq(
-    //       choice("vars", seq(optional("omni"), "data")),
-    //       $.group_identifier,
-    //       $.indent,
-    //       repeat(seq($.type, $.identifier)),
-    //       $.dedent,
-    //     ),
-    //   if_statement: ($) =>
-    //     seq(
-    //       "if",
-    //       $.expression,
-    //       $.block,
-    //       repeat($.else_if_clause),
-    //       optional($.else_clause),
-    //     ),
-    //   else_if_clause: ($) => seq("else if", $.expression, $.block),
-    //   else_clause: ($) => seq("else", $.block),
-    //   while_statement: ($) =>
-    //     seq(
-    //       optional("do"),
-    //       "while",
-    //       $.expression,
-    //       field("loop_modifiers", repeat(seq(":", $.loop_modifier))),
-    //       $.block,
-    //     ),
-    //   for_statement: ($) =>
-    //     seq(
-    //       optional("do"),
-    //       "for",
-    //       optional(field("initialization", $.expression)),
-    //       ";",
-    //       optional(field("condition", $.expression)),
-    //       ";",
-    //       optional(field("iteration", $.expression)),
-    //       field("loop_modifiers", repeat(seq(":", $.loop_modifier))),
-    //       $.block,
-    //     ),
-    //   loop_modifier: (_) => choice("-unroll", "+unroll", "+unloop"),
-    //   switch_statement: ($) => seq("switch", $.expression, $.switch_body),
-    //   switch_body: ($) =>
-    //     seq($.indent, repeat(choice($.case_clause, $.default_clause)), $.dedent),
-    //   case_clause: ($) =>
-    //     seq("case", field("value", $.expression), optional($.block)),
-    //   default_clause: ($) => seq("default", optional($.block)),
-    //   goto_mode_statement: ($) =>
-    //     seq(
-    //       "goto",
-    //       "mode",
-    //       $.identifier,
-    //       "(",
-    //       // args
-    //       ")",
-    //       ":",
-    //       "preserves",
-    //       optional($.group_identifier),
-    //     ),
-    //   label_statement: ($) => seq("label", $.identifier, optional($.block)),
-    //   function_definition: ($) =>
-    //     seq(
-    //       choice(
-    //         "fn",
-    //         seq("ct", optional("fn")),
-    //         "mode",
-    //         // "nmi",
-    //         // "irq"
-    //       ),
-    //       $.identifier,
-    //       "(",
-    //       optional(commaSeparated($.function_argument)),
-    //       ")",
-    //       optional(field("return_type", $.type)),
-    //       optional(
-    //         field("function_modifiers", repeat(seq(":", $.function_modifier))),
-    //       ),
-    //       $.block,
-    //     ),
-    //   // asm_function_definition: ($) =>
-    //   function_argument: ($) =>
-    //     seq(choice($.type, seq($.type, $.group_identifier)), $.identifier),
-    //   function_modifier: ($) =>
-    //     choice(
-    //       "+inline",
-    //       "-inline",
-    //       "+align",
-    //       "+zero_page",
-    //       "-zero_page",
-    //       "+sram",
-    //       "-sram",
-    //       "+spr_8x16",
-    //       "+graphviz",
-    //       "+info",
-    //       "+dpcm",
-    //       "+static",
-    //       "palette_3",
-    //       "palette_25",
-    //       "+sloppy",
-    //       "-sloppy",
-    //       "+fork_scope",
-    //       "+solo_interrupt",
-    //       seq("nmi", $.identifier),
-    //       seq("irq", $.identifier),
-    //       seq("stow", optional("omni"), $.group_identifier),
-    //       seq("employs", optional(choice("vars", "data")), $.group_identifier),
-    //       seq("preserves", $.group_identifier),
-    //       seq("data", $.group_identifier),
-    //     ),
+    // compound statement
+    variable_definition_block: ($) =>
+      seq($.indent, repeat(seq($.variable_definition, $.newline)), $.dedent),
+    statement_block: ($) => seq($.indent, repeat($._statement), $.dedent),
+    variable_definition: ($) =>
+      seq(
+        optional("ct"),
+        $.type,
+        $.identifier,
+        optional(seq("=", field("value", $.expression))),
+        $.newline,
+      ),
+    struct_definition: ($) =>
+      seq("struct", $.identifier, $.variable_definition_block),
+    vars_definition: ($) =>
+      seq("vars", $.group_identifier, $.variable_definition_block),
+    /*
+      data_definition: ($) =>
+      seq(
+        optional("omni"),
+        "data",
+        $.group_identifier,
+        $.data_constant_definition_block,
+      ),
+    byte_block_definition: ($) =>
+      seq(
+        "[",
+        optional($.numeric_literal),
+        "]",
+        $.identifier,
+        $.indent,
+        repeat(choice($.typed_data, $.untyped_data)),
+        $.dedent,
+      ),
+    typed_data: ($) => seq($.type, "(", commaSep1($.numeric_literal), ")"),
+    untyped_data: ($) => seq("(", ")"),
+    */
+    charmap_definition: ($) =>
+      seq(
+        "charmap",
+        $.identifier,
+        "(",
+        $.string_literal,
+        optional(seq(",", $.character_literal)),
+        ")",
+      ),
+    // chrrom_definition: ($) =>
+    //   seq("chrrom", $.numeric_literal, $.indent, repeat(), $.dedent),
+    function_definition: ($) =>
+      seq(
+        choice(seq(optional("ct"), "fn"), "mode", "nmi", "irq"),
+        $.identifier,
+        "(",
+        optional(field("arguments", commaSep1($.function_argument))),
+        ")",
+        optional(field("return_type", $.type)),
+        repeat(seq(":", $.modifier)),
+        $.statement_block,
+      ),
+    function_argument: ($) =>
+      seq($.type, optional($.group_identifier), $.identifier),
+    if_statement: ($) =>
+      seq(
+        "if",
+        $.expression,
+        $.statement_block,
+        repeat($.else_if_clause),
+        optional($.else_clause),
+      ),
+    else_if_clause: ($) => seq("else", "if", $.expression, $.statement_block),
+    else_clause: ($) => seq("else", $.statement_block),
+    while_statement: ($) =>
+      seq(
+        optional("do"),
+        "while",
+        $.expression,
+        field("loop_modifiers", repeat(seq(":", $.loop_modifier))),
+        $.statement_block,
+      ),
+    for_statement: ($) =>
+      seq(
+        optional("do"),
+        "for",
+        optional(field("initialization", $.expression)),
+        ";",
+        optional(field("condition", $.expression)),
+        ";",
+        optional(field("iteration", $.expression)),
+        field("loop_modifiers", repeat(seq(":", $.loop_modifier))),
+        $.statement_block,
+      ),
+    switch_statement: ($) =>
+      seq(
+        "switch",
+        $.expression,
+        $.indent,
+        repeat(choice($.case_clause, $.default_clause)),
+        $.dedent,
+      ),
+    case_clause: ($) =>
+      seq("case", field("value", $.expression), optional($.statement_block)),
+    default_clause: ($) => seq("default", optional($.statement_block)),
+    goto_mode_statement: ($) =>
+      seq(
+        "goto",
+        "mode",
+        $.identifier,
+        "(",
+        optional($.expression),
+        ")",
+        optional(seq(":", "preserves", optional($.group_identifier))),
+      ),
+    label_statement: ($) =>
+      seq("label", $.identifier, optional($.statement_block)),
+    modifier: ($) =>
+      seq(
+        ":",
+        choice(
+          "+inline",
+          "-inline",
+          "+align",
+          "+zero_page",
+          "-zero_page",
+          "+sram",
+          "-sram",
+          "+spr_8x16",
+          "+graphviz",
+          "+info",
+          "+dpcm",
+          "+static",
+          "palette_3",
+          "palette_25",
+          "+sloppy",
+          "-sloppy",
+          "+fork_scope",
+          "+solo_interrupt",
+          seq("nmi", $.identifier),
+          seq("irq", $.identifier),
+          seq("stow", optional("omni"), $.group_identifier),
+          seq("employs", optional(choice("vars", "data")), $.group_identifier),
+          seq("preserves", $.group_identifier),
+          seq("data", $.group_identifier),
+        ),
+      ),
+    loop_modifier: (_) => choice("-unroll", "+unroll", "+unloop"),
 
     // types
     type: ($) => choice($.scalar_type, $.quantity_type, $.array_type),

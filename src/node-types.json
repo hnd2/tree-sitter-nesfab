@@ -253,6 +253,70 @@
     }
   },
   {
+    "type": "case_clause",
+    "named": true,
+    "fields": {
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "statement_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "character_literal",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "escape_sequence",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "charmap_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "character_literal",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "comparison_operator",
     "named": true,
     "fields": {
@@ -317,6 +381,21 @@
     }
   },
   {
+    "type": "default_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "statement_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "double_quoted_string",
     "named": true,
     "fields": {},
@@ -332,6 +411,40 @@
     }
   },
   {
+    "type": "else_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "statement_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "else_if_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "statement_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "expression",
     "named": true,
     "fields": {},
@@ -341,6 +454,10 @@
       "types": [
         {
           "type": "comparison_operator",
+          "named": true
+        },
+        {
+          "type": "file_expression",
           "named": true
         },
         {
@@ -374,12 +491,211 @@
     }
   },
   {
+    "type": "file_expression",
+    "named": true,
+    "fields": {
+      "target": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "modifier",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "fixed_point_type",
     "named": true,
     "fields": {}
   },
   {
+    "type": "for_statement",
+    "named": true,
+    "fields": {
+      "condition": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "initialization": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "iteration": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "loop_modifiers": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": ":",
+            "named": false
+          },
+          {
+            "type": "loop_modifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "statement_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "function_argument",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "group_identifier",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "function_definition",
+    "named": true,
+    "fields": {
+      "arguments": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": ",",
+            "named": false
+          },
+          {
+            "type": "function_argument",
+            "named": true
+          }
+        ]
+      },
+      "return_type": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "modifier",
+          "named": true
+        },
+        {
+          "type": "statement_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "goto_mode_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "group_identifier",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "goto_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "group_identifier",
     "named": true,
     "fields": {},
     "children": {
@@ -448,6 +764,33 @@
     }
   },
   {
+    "type": "if_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "else_clause",
+          "named": true
+        },
+        {
+          "type": "else_if_clause",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "statement_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "integer_type",
     "named": true,
     "fields": {}
@@ -466,6 +809,30 @@
         }
       ]
     }
+  },
+  {
+    "type": "label_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "statement_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "loop_modifier",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "member_access",
@@ -504,6 +871,25 @@
     }
   },
   {
+    "type": "modifier",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "group_identifier",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "module",
     "named": true,
     "fields": {},
@@ -513,6 +899,10 @@
       "types": [
         {
           "type": "break_statement",
+          "named": true
+        },
+        {
+          "type": "charmap_definition",
           "named": true
         },
         {
@@ -528,6 +918,18 @@
           "named": true
         },
         {
+          "type": "for_statement",
+          "named": true
+        },
+        {
+          "type": "function_definition",
+          "named": true
+        },
+        {
+          "type": "goto_mode_statement",
+          "named": true
+        },
+        {
           "type": "goto_statement",
           "named": true
         },
@@ -536,7 +938,15 @@
           "named": true
         },
         {
+          "type": "if_statement",
+          "named": true
+        },
+        {
           "type": "irq_statement",
+          "named": true
+        },
+        {
+          "type": "label_statement",
           "named": true
         },
         {
@@ -552,7 +962,27 @@
           "named": true
         },
         {
+          "type": "struct_definition",
+          "named": true
+        },
+        {
           "type": "swap_statement",
+          "named": true
+        },
+        {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
+          "type": "variable_definition",
+          "named": true
+        },
+        {
+          "type": "vars_definition",
+          "named": true
+        },
+        {
+          "type": "while_statement",
           "named": true
         },
         {
@@ -561,6 +991,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "nmi_statement",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "numeric_constant_type",
@@ -610,6 +1045,10 @@
         },
         {
           "type": "call",
+          "named": true
+        },
+        {
+          "type": "character_literal",
           "named": true
         },
         {
@@ -767,15 +1206,111 @@
     }
   },
   {
-    "type": "single_quoted_string",
+    "type": "statement_block",
     "named": true,
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
-          "type": "escape_sequence",
+          "type": "break_statement",
+          "named": true
+        },
+        {
+          "type": "charmap_definition",
+          "named": true
+        },
+        {
+          "type": "continue_statement",
+          "named": true
+        },
+        {
+          "type": "dedent",
+          "named": true
+        },
+        {
+          "type": "expression_statement",
+          "named": true
+        },
+        {
+          "type": "fence_statement",
+          "named": true
+        },
+        {
+          "type": "for_statement",
+          "named": true
+        },
+        {
+          "type": "function_definition",
+          "named": true
+        },
+        {
+          "type": "goto_mode_statement",
+          "named": true
+        },
+        {
+          "type": "goto_statement",
+          "named": true
+        },
+        {
+          "type": "hardware_write",
+          "named": true
+        },
+        {
+          "type": "if_statement",
+          "named": true
+        },
+        {
+          "type": "indent",
+          "named": true
+        },
+        {
+          "type": "irq_statement",
+          "named": true
+        },
+        {
+          "type": "label_statement",
+          "named": true
+        },
+        {
+          "type": "newline",
+          "named": true
+        },
+        {
+          "type": "nmi_statement",
+          "named": true
+        },
+        {
+          "type": "return_statement",
+          "named": true
+        },
+        {
+          "type": "struct_definition",
+          "named": true
+        },
+        {
+          "type": "swap_statement",
+          "named": true
+        },
+        {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
+          "type": "variable_definition",
+          "named": true
+        },
+        {
+          "type": "vars_definition",
+          "named": true
+        },
+        {
+          "type": "while_statement",
+          "named": true
+        },
+        {
+          "type": "write",
           "named": true
         }
       ]
@@ -796,9 +1331,24 @@
         {
           "type": "double_quoted_string",
           "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "struct_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
         },
         {
-          "type": "single_quoted_string",
+          "type": "variable_definition_block",
           "named": true
         }
       ]
@@ -828,6 +1378,37 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "switch_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "case_clause",
+          "named": true
+        },
+        {
+          "type": "dedent",
+          "named": true
+        },
+        {
+          "type": "default_clause",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "indent",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -985,6 +1566,86 @@
     }
   },
   {
+    "type": "variable_definition",
+    "named": true,
+    "fields": {
+      "value": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "newline",
+          "named": true
+        },
+        {
+          "type": "type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "variable_definition_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dedent",
+          "named": true
+        },
+        {
+          "type": "indent",
+          "named": true
+        },
+        {
+          "type": "newline",
+          "named": true
+        },
+        {
+          "type": "variable_definition",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "vars_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "group_identifier",
+          "named": true
+        },
+        {
+          "type": "variable_definition_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "vector_type",
     "named": true,
     "fields": {},
@@ -998,6 +1659,40 @@
         },
         {
           "type": "scalar_type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "while_statement",
+    "named": true,
+    "fields": {
+      "loop_modifiers": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": ":",
+            "named": false
+          },
+          {
+            "type": "loop_modifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "statement_block",
           "named": true
         }
       ]
@@ -1096,6 +1791,62 @@
     "named": false
   },
   {
+    "type": "+align",
+    "named": false
+  },
+  {
+    "type": "+dpcm",
+    "named": false
+  },
+  {
+    "type": "+fork_scope",
+    "named": false
+  },
+  {
+    "type": "+graphviz",
+    "named": false
+  },
+  {
+    "type": "+info",
+    "named": false
+  },
+  {
+    "type": "+inline",
+    "named": false
+  },
+  {
+    "type": "+sloppy",
+    "named": false
+  },
+  {
+    "type": "+solo_interrupt",
+    "named": false
+  },
+  {
+    "type": "+spr_8x16",
+    "named": false
+  },
+  {
+    "type": "+sram",
+    "named": false
+  },
+  {
+    "type": "+static",
+    "named": false
+  },
+  {
+    "type": "+unloop",
+    "named": false
+  },
+  {
+    "type": "+unroll",
+    "named": false
+  },
+  {
+    "type": "+zero_page",
+    "named": false
+  },
+  {
     "type": ",",
     "named": false
   },
@@ -1108,7 +1859,39 @@
     "named": false
   },
   {
+    "type": "-inline",
+    "named": false
+  },
+  {
+    "type": "-sloppy",
+    "named": false
+  },
+  {
+    "type": "-sram",
+    "named": false
+  },
+  {
+    "type": "-unroll",
+    "named": false
+  },
+  {
+    "type": "-zero_page",
+    "named": false
+  },
+  {
     "type": ".",
+    "named": false
+  },
+  {
+    "type": "/",
+    "named": false
+  },
+  {
+    "type": ":",
+    "named": false
+  },
+  {
+    "type": ";",
     "named": false
   },
   {
@@ -1332,10 +2115,6 @@
     "named": false
   },
   {
-    "type": "aa",
-    "named": false
-  },
-  {
     "type": "bool_type",
     "named": true
   },
@@ -1348,6 +2127,14 @@
     "named": true
   },
   {
+    "type": "case",
+    "named": false
+  },
+  {
+    "type": "charmap",
+    "named": false
+  },
+  {
     "type": "comment",
     "named": true
   },
@@ -1356,12 +2143,52 @@
     "named": true
   },
   {
+    "type": "ct",
+    "named": false
+  },
+  {
+    "type": "data",
+    "named": false
+  },
+  {
+    "type": "dedent",
+    "named": true
+  },
+  {
+    "type": "default",
+    "named": false
+  },
+  {
+    "type": "do",
+    "named": false
+  },
+  {
+    "type": "else",
+    "named": false
+  },
+  {
+    "type": "employs",
+    "named": false
+  },
+  {
     "type": "escape_sequence",
     "named": true
   },
   {
     "type": "fence_statement",
     "named": true
+  },
+  {
+    "type": "file",
+    "named": false
+  },
+  {
+    "type": "fn",
+    "named": false
+  },
+  {
+    "type": "for",
+    "named": false
   },
   {
     "type": "function_pointer_type",
@@ -1376,7 +2203,19 @@
     "named": true
   },
   {
+    "type": "if",
+    "named": false
+  },
+  {
+    "type": "indent",
+    "named": true
+  },
+  {
     "type": "irq",
+    "named": false
+  },
+  {
+    "type": "label",
     "named": false
   },
   {
@@ -1384,20 +2223,40 @@
     "named": true
   },
   {
+    "type": "mode",
+    "named": false
+  },
+  {
     "type": "newline",
     "named": true
+  },
+  {
+    "type": "nmi",
+    "named": false
   },
   {
     "type": "nmi_counter",
     "named": true
   },
   {
-    "type": "nmi_statement",
+    "type": "numeric_literal",
     "named": true
   },
   {
-    "type": "numeric_literal",
-    "named": true
+    "type": "omni",
+    "named": false
+  },
+  {
+    "type": "palette_25",
+    "named": false
+  },
+  {
+    "type": "palette_3",
+    "named": false
+  },
+  {
+    "type": "preserves",
+    "named": false
   },
   {
     "type": "read",
@@ -1412,12 +2271,32 @@
     "named": false
   },
   {
+    "type": "stow",
+    "named": false
+  },
+  {
+    "type": "struct",
+    "named": false
+  },
+  {
     "type": "swap",
+    "named": false
+  },
+  {
+    "type": "switch",
+    "named": false
+  },
+  {
+    "type": "vars",
     "named": false
   },
   {
     "type": "void_type",
     "named": true
+  },
+  {
+    "type": "while",
+    "named": false
   },
   {
     "type": "write",

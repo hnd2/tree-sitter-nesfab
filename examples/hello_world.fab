@@ -7,11 +7,13 @@
 // This small program plays a sound effect.
 
 // Variables:
+UU pitch
+ct UU pitch = 1000
 vars /sound
     UU pitch = 1000
 
 // Sends 'pitch' variable to the APU, emitting sound:
-fn play_sound()
+ct fn play_sound()
     {$4015}(%100)
     {$4008}($FF)
     {$400A}(pitch.a)
@@ -27,3 +29,12 @@ pitch.a = 2
 x = @paa{1000}
 first = read UU(ptr)
 write UU(ptr, $1234)
+
+charmap foo(" ,.!?ABCDEFGHIJKLMNOPQRSTUVWXYZ\0", '\0')
+ct U{} my_data = file(chr, "sprites.png") : +spr_8x16
+
+mode bar(U some_argument)
+    my_vars = some_argument
+
+    goto mode foo()
+    : preserves /my_vars
