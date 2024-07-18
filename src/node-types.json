@@ -685,10 +685,6 @@
         "required": false,
         "types": [
           {
-            "type": ":",
-            "named": false
-          },
-          {
             "type": "loop_modifier",
             "named": true
           }
@@ -1832,6 +1828,10 @@
           "named": true
         },
         {
+          "type": "modifier",
+          "named": true
+        },
+        {
           "type": "variable_definition_block",
           "named": true
         }
@@ -1869,10 +1869,6 @@
         "multiple": true,
         "required": false,
         "types": [
-          {
-            "type": ":",
-            "named": false
-          },
           {
             "type": "loop_modifier",
             "named": true

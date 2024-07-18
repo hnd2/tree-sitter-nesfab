@@ -453,7 +453,12 @@ module.exports = grammar({
     struct_definition: ($) =>
       seq("struct", $.identifier, $.variable_definition_block),
     vars_definition: ($) =>
-      seq("vars", $.group_identifier, $.variable_definition_block),
+      seq(
+        "vars",
+        $.group_identifier,
+        repeat($.modifier),
+        $.variable_definition_block,
+      ),
     /*
       data_definition: ($) =>
       seq(
@@ -494,7 +499,7 @@ module.exports = grammar({
         optional(field("arguments", commaSep1($.function_argument))),
         ")",
         optional(field("return_type", $.type)),
-        repeat(seq(":", $.modifier)),
+        repeat($.modifier),
         $.statement_block,
       ),
     function_argument: ($) =>
@@ -514,7 +519,7 @@ module.exports = grammar({
         optional("do"),
         "while",
         $.expression,
-        field("loop_modifiers", repeat(seq(":", $.loop_modifier))),
+        field("loop_modifiers", repeat($.loop_modifier)),
         $.statement_block,
       ),
     for_statement: ($) =>
@@ -526,7 +531,7 @@ module.exports = grammar({
         optional(field("condition", $.expression)),
         ";",
         optional(field("iteration", $.expression)),
-        field("loop_modifiers", repeat(seq(":", $.loop_modifier))),
+        field("loop_modifiers", repeat($.loop_modifier)),
         $.statement_block,
       ),
     switch_statement: ($) =>
@@ -584,7 +589,7 @@ module.exports = grammar({
           seq("data", $.group_identifier),
         ),
       ),
-    loop_modifier: (_) => choice("-unroll", "+unroll", "+unloop"),
+    loop_modifier: (_) => seq(":", choice("-unroll", "+unroll", "+unloop")),
 
     // types
     type: ($) => choice($.scalar_type, $.quantity_type, $.array_type),

@@ -2893,6 +2893,13 @@
           "name": "group_identifier"
         },
         {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "modifier"
+          }
+        },
+        {
           "type": "SYMBOL",
           "name": "variable_definition_block"
         }
@@ -3225,17 +3232,8 @@
           "content": {
             "type": "REPEAT",
             "content": {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": ":"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "loop_modifier"
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "loop_modifier"
             }
           }
         },
@@ -3326,17 +3324,8 @@
           "content": {
             "type": "REPEAT",
             "content": {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": ":"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "loop_modifier"
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "loop_modifier"
             }
           }
         },
@@ -3739,19 +3728,28 @@
       ]
     },
     "loop_modifier": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
           "type": "STRING",
-          "value": "-unroll"
+          "value": ":"
         },
         {
-          "type": "STRING",
-          "value": "+unroll"
-        },
-        {
-          "type": "STRING",
-          "value": "+unloop"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "-unroll"
+            },
+            {
+              "type": "STRING",
+              "value": "+unroll"
+            },
+            {
+              "type": "STRING",
+              "value": "+unloop"
+            }
+          ]
         }
       ]
     },

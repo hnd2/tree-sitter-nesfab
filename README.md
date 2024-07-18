@@ -1,6 +1,13 @@
 # TODO
 - [ ] grammar
-  - [ ] array initialize
+  - [ ] zero initialization
+  - [ ] banked pointer initialization
+  - [ ] array fills
   - [ ] asm
   - [ ] data, byte block
-  - [ ] push, pop
+  - [ ] curly braces
+  - [ ] sizeof
+  - [ ] len
+  - [ ] abs
+  - [ ] min, max
+  - [ ] type with group
