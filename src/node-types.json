@@ -306,6 +306,10 @@
         "required": true,
         "types": [
           {
+            "type": "identifier",
+            "named": true
+          },
+          {
             "type": "primary_expression",
             "named": true
           }
@@ -782,17 +786,24 @@
   {
     "type": "goto_mode_statement",
     "named": true,
-    "fields": {},
+    "fields": {
+      "function_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "identifier",
           "named": true
         },
         {
@@ -970,21 +981,11 @@
             "named": true
           }
         ]
-      },
-      "target": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "string_literal",
-            "named": true
-          }
-        ]
       }
     },
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "string_literal",
@@ -1642,6 +1643,10 @@
       "required": true,
       "types": [
         {
+          "type": "identifier",
+          "named": true
+        },
+        {
           "type": "numeric_literal",
           "named": true
         },
@@ -1841,6 +1846,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
         {
           "type": "quantity_type",
           "named": true

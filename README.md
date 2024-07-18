@@ -1,5 +1,6 @@
 # TODO
 - [ ] grammar
-  - [ ] custom type, array of customtype
+  - [ ] array initialize
   - [ ] asm
   - [ ] data, byte block
+  - [ ] push, pop

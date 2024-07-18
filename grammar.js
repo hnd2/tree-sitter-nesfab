@@ -38,6 +38,7 @@ const PREC = {
   binary_assign_by_bitwise_xor: 30, // ^=
   binary_assign_by_bitwise_or: 30, // |=
   binary_assign: 30, // =
+  array_type: 1,
   call: 5,
 };
 
@@ -349,7 +350,7 @@ module.exports = grammar({
       prec.left(
         PREC.call,
         seq(
-          field("function_name", $.primary_expression),
+          field("function_name", choice($.primary_expression, $.identifier)),
           "(",
           optional(field("arguments", commaSep1($.primary_expression))),
           ")",
@@ -405,8 +406,7 @@ module.exports = grammar({
         seq(
           field("function_name", alias("macro", $.identifier)),
           "(",
-          field("target", $.string_literal),
-          optional(seq(",", commaSep1($.string_literal))),
+          commaSep1($.string_literal),
           ")",
         ),
       ),
@@ -544,7 +544,7 @@ module.exports = grammar({
       seq(
         "goto",
         "mode",
-        $.identifier,
+        field("function_name", $.identifier),
         "(",
         optional($.expression),
         ")",
@@ -617,13 +617,20 @@ module.exports = grammar({
         $.pointer_addressable_array_type,
       ),
     typed_element_array_type: ($) =>
-      seq(
-        choice($.scalar_type, $.quantity_type),
-        "[",
-        optional($.numeric_literal),
-        "]",
+      prec.left(
+        PREC.array_type,
+        seq(
+          choice($.scalar_type, $.quantity_type, $.identifier),
+          "[",
+          optional($.numeric_literal),
+          "]",
+        ),
       ),
-    vector_type: ($) => seq(choice($.scalar_type, $.quantity_type), "{}"),
+    vector_type: ($) =>
+      prec.left(
+        PREC.array_type,
+        seq(choice($.scalar_type, $.quantity_type, $.identifier), "{}"),
+      ),
     pointer_addressable_array_type: ($) =>
       seq("[", optional($.numeric_literal), "]"),
 
