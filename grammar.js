@@ -80,7 +80,6 @@ module.exports = grammar({
         $.vars_definition,
         // $.data_definition,
         $.charmap_definition,
-        // $.chrrom_definition,
         $.function_definition,
         $.if_statement,
         $.while_statement,
@@ -88,7 +87,9 @@ module.exports = grammar({
         $.switch_statement,
         $.goto_mode_statement,
         $.label_statement,
+        $.chrrom_definition,
       ),
+    _byte_block_statement: ($) => choice($.file_expression),
 
     expression_statement: ($) =>
       choice($.expression, $.assignment, $.augumented_assignment),
@@ -103,13 +104,20 @@ module.exports = grammar({
         ",",
         field("right", $.identifier),
       ),
-    fence_statement: (_) => "fence",
-    nmi_statement: (_) => "nmi",
+    fence_statement: (_) => prec.left("fence"),
+    nmi_statement: (_) => prec.left("nmi"),
     irq_statement: ($) => seq("irq", optional($.boolean_literal)),
 
     // expression
     expression: ($) =>
-      choice($.primary_expression, $.comparison_operator, $.file_expression),
+      choice(
+        $.primary_expression,
+        $.comparison_operator,
+        $.file_expression,
+        $.macro_expression,
+        $.mapfab_expression,
+        $.audio_expression,
+      ),
 
     primary_expression: ($) =>
       choice(
@@ -178,6 +186,12 @@ module.exports = grammar({
         "`",
         repeat(choice(token.immediate(/[^`\\]+/), $.escape_sequence)),
         "`",
+      ),
+    sharp_quoted_string: ($) =>
+      seq(
+        "#",
+        repeat(choice(token.immediate(/[^`\\]+/), $.escape_sequence)),
+        "#",
       ),
     escape_sequence: ($) =>
       token.immediate(
@@ -335,7 +349,7 @@ module.exports = grammar({
       prec.left(
         PREC.call,
         seq(
-          field("function", $.primary_expression),
+          field("function_name", $.primary_expression),
           "(",
           optional(field("arguments", commaSep1($.primary_expression))),
           ")",
@@ -370,30 +384,68 @@ module.exports = grammar({
           ")",
         ),
       ),
-    ready: ($) => "ready",
-    nmi_counter: ($) => "nmi_counter",
+    ready: (_) => prec.left("ready"),
+    nmi_counter: (_) => prec.left("nmi_counter"),
     file_expression: ($) =>
       prec.left(
         PREC.call,
         seq(
-          "file",
+          field("function_name", alias("file", $.identifier)),
           "(",
-          field("target", $.identifier),
+          field("target", $.file_target),
           ",",
           $.string_literal,
           ")",
           optional($.modifier),
         ),
       ),
+    macro_expression: ($) =>
+      prec.left(
+        PREC.call,
+        seq(
+          field("function_name", alias("macro", $.identifier)),
+          "(",
+          field("target", $.string_literal),
+          optional(seq(",", commaSep1($.string_literal))),
+          ")",
+        ),
+      ),
+    mapfab_expression: ($) =>
+      prec.left(
+        PREC.call,
+        seq(
+          field("function_name", alias("mapfab", $.identifier)),
+          "(",
+          field("target", $.mapfab_target),
+          optional(seq(",", commaSep1($.string_literal))),
+          ")",
+        ),
+      ),
+    audio_expression: ($) =>
+      prec.left(
+        PREC.call,
+        seq(
+          field("function_name", alias("audio", $.identifier)),
+          "(",
+          field("target", $.audio_target),
+          optional(seq(",", commaSep1($.string_literal))),
+          ")",
+        ),
+      ),
+    file_target: (_) => choice("chr", "raw", "fmt", "pbz", "donut", "rlz"),
+    mapfab_target: ($) => choice("raw", "pbz", "rlz", "mmt_32"),
+    audio_target: (_) => choice("puf1_sfx", "puf1_music"),
 
     // compound statement
     variable_definition_block: ($) =>
       seq($._indent, repeat(seq($.variable_definition, $._newline)), $._dedent),
     statement_block: ($) => seq($._indent, repeat($._statement), $._dedent),
+    byte_block: ($) =>
+      seq($._indent, repeat($._byte_block_statement), $._dedent),
     variable_definition: ($) =>
       seq(
         optional("ct"),
-        $.type,
+        field("type", choice($.type, $.identifier)),
         $.identifier,
         optional(seq("=", field("value", $.expression))),
         $._newline,
@@ -432,12 +484,12 @@ module.exports = grammar({
         optional(seq(",", $.character_literal)),
         ")",
       ),
-    // chrrom_definition: ($) =>
-    //   seq("chrrom", $.numeric_literal, $._indent, repeat(), $._dedent),
+    chrrom_definition: ($) =>
+      seq("chrrom", optional($.primary_expression), $.byte_block),
     function_definition: ($) =>
       seq(
         choice(seq(optional("ct"), "fn"), "mode", "nmi", "irq"),
-        $.identifier,
+        field("function_name", $.identifier),
         "(",
         optional(field("arguments", commaSep1($.function_argument))),
         ")",
@@ -496,8 +548,10 @@ module.exports = grammar({
         "(",
         optional($.expression),
         ")",
-        optional(seq(":", "preserves", optional($.group_identifier))),
+        optional(alias($.goto_mode_modifier, $.modifier)),
       ),
+    goto_mode_modifier: ($) =>
+      seq(":", "preserves", optional($.group_identifier)),
     label_statement: ($) =>
       seq("label", $.identifier, optional($.statement_block)),
     modifier: ($) =>

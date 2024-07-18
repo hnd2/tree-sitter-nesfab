@@ -64,6 +64,47 @@
     }
   },
   {
+    "type": "audio_expression",
+    "named": true,
+    "fields": {
+      "function_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "target": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "audio_target",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "audio_target",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "augumented_assignment",
     "named": true,
     "fields": {
@@ -228,6 +269,21 @@
     "fields": {}
   },
   {
+    "type": "byte_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "file_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "call",
     "named": true,
     "fields": {
@@ -245,7 +301,7 @@
           }
         ]
       },
-      "function": {
+      "function_name": {
         "multiple": false,
         "required": true,
         "types": [
@@ -316,6 +372,25 @@
         },
         {
           "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "chrrom_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "byte_block",
+          "named": true
+        },
+        {
+          "type": "primary_expression",
           "named": true
         }
       ]
@@ -463,11 +538,23 @@
       "required": true,
       "types": [
         {
+          "type": "audio_expression",
+          "named": true
+        },
+        {
           "type": "comparison_operator",
           "named": true
         },
         {
           "type": "file_expression",
+          "named": true
+        },
+        {
+          "type": "macro_expression",
+          "named": true
+        },
+        {
+          "type": "mapfab_expression",
           "named": true
         },
         {
@@ -501,15 +588,30 @@
     }
   },
   {
+    "type": "fence_statement",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "file_expression",
     "named": true,
     "fields": {
-      "target": {
+      "function_name": {
         "multiple": false,
         "required": true,
         "types": [
           {
             "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "target": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "file_target",
             "named": true
           }
         ]
@@ -529,6 +631,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "file_target",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "fixed_point_type",
@@ -636,6 +743,16 @@
           }
         ]
       },
+      "function_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
       "return_type": {
         "multiple": false,
         "required": false,
@@ -651,10 +768,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
         {
           "type": "modifier",
           "named": true
@@ -679,11 +792,11 @@
           "named": true
         },
         {
-          "type": "group_identifier",
+          "type": "identifier",
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "modifier",
           "named": true
         }
       ]
@@ -845,6 +958,83 @@
     "fields": {}
   },
   {
+    "type": "macro_expression",
+    "named": true,
+    "fields": {
+      "function_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "target": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "string_literal",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "mapfab_expression",
+    "named": true,
+    "fields": {
+      "function_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "target": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "mapfab_target",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "mapfab_target",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "member_access",
     "named": true,
     "fields": {
@@ -913,6 +1103,10 @@
         },
         {
           "type": "charmap_definition",
+          "named": true
+        },
+        {
+          "type": "chrrom_definition",
           "named": true
         },
         {
@@ -997,6 +1191,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "nmi_counter",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "nmi_statement",
@@ -1162,6 +1361,11 @@
     }
   },
   {
+    "type": "ready",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "return_statement",
     "named": true,
     "fields": {},
@@ -1225,6 +1429,10 @@
         },
         {
           "type": "charmap_definition",
+          "named": true
+        },
+        {
+          "type": "chrrom_definition",
           "named": true
         },
         {
@@ -1555,6 +1763,20 @@
     "type": "variable_definition",
     "named": true,
     "fields": {
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      },
       "value": {
         "multiple": false,
         "required": false,
@@ -1567,15 +1789,11 @@
       }
     },
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "type",
           "named": true
         }
       ]
@@ -1714,6 +1932,10 @@
   },
   {
     "type": "\"",
+    "named": false
+  },
+  {
+    "type": "#",
     "named": false
   },
   {
@@ -2105,6 +2327,14 @@
     "named": false
   },
   {
+    "type": "chr",
+    "named": false
+  },
+  {
+    "type": "chrrom",
+    "named": false
+  },
+  {
     "type": "comment",
     "named": true
   },
@@ -2129,6 +2359,10 @@
     "named": false
   },
   {
+    "type": "donut",
+    "named": false
+  },
+  {
     "type": "else",
     "named": false
   },
@@ -2141,11 +2375,11 @@
     "named": true
   },
   {
-    "type": "fence_statement",
-    "named": true
+    "type": "fence",
+    "named": false
   },
   {
-    "type": "file",
+    "type": "fmt",
     "named": false
   },
   {
@@ -2185,6 +2419,10 @@
     "named": true
   },
   {
+    "type": "mmt_32",
+    "named": false
+  },
+  {
     "type": "mode",
     "named": false
   },
@@ -2194,7 +2432,7 @@
   },
   {
     "type": "nmi_counter",
-    "named": true
+    "named": false
   },
   {
     "type": "numeric_literal",
@@ -2213,7 +2451,23 @@
     "named": false
   },
   {
+    "type": "pbz",
+    "named": false
+  },
+  {
     "type": "preserves",
+    "named": false
+  },
+  {
+    "type": "puf1_music",
+    "named": false
+  },
+  {
+    "type": "puf1_sfx",
+    "named": false
+  },
+  {
+    "type": "raw",
     "named": false
   },
   {
@@ -2222,10 +2476,14 @@
   },
   {
     "type": "ready",
-    "named": true
+    "named": false
   },
   {
     "type": "return",
+    "named": false
+  },
+  {
+    "type": "rlz",
     "named": false
   },
   {

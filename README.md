@@ -1,10 +1,5 @@
 # TODO
 - [ ] grammar
+  - [ ] custom type, array of customtype
   - [ ] asm
-  - [ ] data, chrrom, byte block
-  - [ ] macro
-  - [ ] mapfab
-  - [ ] audio
-  - [ ] modifier
-
-- [ ] highlight
+  - [ ] data, byte block

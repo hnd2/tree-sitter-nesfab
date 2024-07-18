@@ -1,10 +1,13 @@
-/*
- * Copyright (c) 2023, Patrick Bene
- * This file is distributed under the Boost Software License, Version 1.0.
- * See LICENSE_1_0.txt or https://www.boost.org/LICENSE_1_0.txt
- */
-
 // This small program plays a sound effect.
+audio(puf1_music, "music.txt")
+mapfab(raw, "project.mapfab", "chr", "palette", "metatiles", "level")
+macro("pool_contiguous", "Enemy", "16", "enemies", "/game")
+
+ct fn enemies_vec(Int{} x, Int{} y) Enemy{}
+    Enemy{} out = Enemy{}()
+    for U i = 0; i < len(x); i += 1
+        push(out, Enemy(U(x{i}), U(y{i})))
+    return out
 
 // Variables:
 UU pitch
@@ -32,10 +35,20 @@ first = read UU(ptr)
 write UU(ptr, $1234)
 
 charmap foo(" ,.!?ABCDEFGHIJKLMNOPQRSTUVWXYZ\0", '\0')
-ct U{} my_data = file(chr, "sprites.png") : +spr_8x16
+
+// Store at offset $0000:
+chrrom
+    file(chr, "sprites.png")
+    file(chr, "bg.png")
+
+// Store at offset $2000:
+chrrom $2000
+    file(chr, "more_sprites.png")
+    file(chr, "more_bg.png")
 
 mode bar(U some_argument)
     my_vars = some_argument
+    bar()
 
     goto mode foo()
     : preserves /my_vars
