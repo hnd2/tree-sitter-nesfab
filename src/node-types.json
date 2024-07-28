@@ -664,22 +664,16 @@
             "named": true
           }
         ]
-      },
-      "loop_modifiers": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "loop_modifier",
-            "named": true
-          }
-        ]
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "modifier",
+          "named": true
+        },
         {
           "type": "statement_block",
           "named": true
@@ -943,11 +937,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "loop_modifier",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "macro_expression",
@@ -1822,21 +1811,28 @@
   {
     "type": "vars_definition",
     "named": true,
-    "fields": {},
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "group_identifier",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
-        {
-          "type": "group_identifier",
-          "named": true
-        },
         {
           "type": "modifier",
           "named": true
         },
         {
-          "type": "variable_definition_block",
+          "type": "variable_definition",
           "named": true
         }
       ]
@@ -1868,24 +1864,17 @@
   {
     "type": "while_statement",
     "named": true,
-    "fields": {
-      "loop_modifiers": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "loop_modifier",
-            "named": true
-          }
-        ]
-      }
-    },
+    "fields": {},
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "modifier",
           "named": true
         },
         {
@@ -2377,6 +2366,14 @@
   },
   {
     "type": "employs",
+    "named": false
+  },
+  {
+    "type": "employs data",
+    "named": false
+  },
+  {
+    "type": "employs vars",
     "named": false
   },
   {

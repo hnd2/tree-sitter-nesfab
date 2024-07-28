@@ -462,9 +462,12 @@ module.exports = grammar({
     vars_definition: ($) =>
       seq(
         "vars",
-        $.group_identifier,
-        repeat($.modifier),
-        $.variable_definition_block,
+        optional(field("name", $.group_identifier)),
+        seq(
+          $._indent,
+          repeat(seq($.variable_definition, repeat($.modifier))),
+          $._dedent,
+        ),
       ),
     /*
       data_definition: ($) =>
@@ -526,8 +529,8 @@ module.exports = grammar({
         optional("do"),
         "while",
         $.expression,
-        field("loop_modifiers", repeat($.loop_modifier)),
-        $.statement_block,
+        repeat(alias($.loop_modifier, $.modifier)),
+        optional($.statement_block),
       ),
     for_statement: ($) =>
       seq(
@@ -540,7 +543,7 @@ module.exports = grammar({
         optional(field("condition", $.expression)),
         ";",
         optional(field("iteration", $.expression)),
-        field("loop_modifiers", repeat($.loop_modifier)),
+        repeat(alias($.loop_modifier, $.modifier)),
         $.statement_block,
       ),
     switch_statement: ($) =>
@@ -599,7 +602,9 @@ module.exports = grammar({
           seq("nmi", $.identifier),
           seq("irq", $.identifier),
           seq("stow", optional("omni"), $.group_identifier),
-          seq("employs", optional(choice("vars", "data")), $.group_identifier),
+          seq("employs", optional($.group_identifier)),
+          seq("employs vars", optional($.group_identifier)),
+          seq("employs data", optional($.group_identifier)),
           seq("preserves", $.group_identifier),
           seq("data", $.group_identifier),
         ),
