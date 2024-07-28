@@ -3927,15 +3927,79 @@
       ]
     },
     "fixed_point_type": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "integer_type"
+          "type": "STRING",
+          "value": "UF"
         },
         {
-          "type": "SYMBOL",
-          "name": "unit_fractional_type"
+          "type": "STRING",
+          "value": "SF"
+        },
+        {
+          "type": "STRING",
+          "value": "UUF"
+        },
+        {
+          "type": "STRING",
+          "value": "SSF"
+        },
+        {
+          "type": "STRING",
+          "value": "UUUF"
+        },
+        {
+          "type": "STRING",
+          "value": "SSSF"
+        },
+        {
+          "type": "STRING",
+          "value": "UFF"
+        },
+        {
+          "type": "STRING",
+          "value": "SFF"
+        },
+        {
+          "type": "STRING",
+          "value": "UUFF"
+        },
+        {
+          "type": "STRING",
+          "value": "SSFF"
+        },
+        {
+          "type": "STRING",
+          "value": "UUUFF"
+        },
+        {
+          "type": "STRING",
+          "value": "SSSFF"
+        },
+        {
+          "type": "STRING",
+          "value": "UFFF"
+        },
+        {
+          "type": "STRING",
+          "value": "SFFF"
+        },
+        {
+          "type": "STRING",
+          "value": "UUFFF"
+        },
+        {
+          "type": "STRING",
+          "value": "SSFFF"
+        },
+        {
+          "type": "STRING",
+          "value": "UUUFFF"
+        },
+        {
+          "type": "STRING",
+          "value": "SSSFFF"
         }
       ]
     },

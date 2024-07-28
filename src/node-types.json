@@ -625,21 +625,7 @@
   {
     "type": "fixed_point_type",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "integer_type",
-          "named": true
-        },
-        {
-          "type": "unit_fractional_type",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "for_statement",
@@ -2251,11 +2237,47 @@
     "named": false
   },
   {
+    "type": "SF",
+    "named": false
+  },
+  {
+    "type": "SFF",
+    "named": false
+  },
+  {
+    "type": "SFFF",
+    "named": false
+  },
+  {
     "type": "SS",
     "named": false
   },
   {
+    "type": "SSF",
+    "named": false
+  },
+  {
+    "type": "SSFF",
+    "named": false
+  },
+  {
+    "type": "SSFFF",
+    "named": false
+  },
+  {
     "type": "SSS",
+    "named": false
+  },
+  {
+    "type": "SSSF",
+    "named": false
+  },
+  {
+    "type": "SSSFF",
+    "named": false
+  },
+  {
+    "type": "SSSFFF",
     "named": false
   },
   {
@@ -2279,11 +2301,47 @@
     "named": false
   },
   {
+    "type": "UF",
+    "named": false
+  },
+  {
+    "type": "UFF",
+    "named": false
+  },
+  {
+    "type": "UFFF",
+    "named": false
+  },
+  {
     "type": "UU",
     "named": false
   },
   {
+    "type": "UUF",
+    "named": false
+  },
+  {
+    "type": "UUFF",
+    "named": false
+  },
+  {
+    "type": "UUFFF",
+    "named": false
+  },
+  {
     "type": "UUU",
+    "named": false
+  },
+  {
+    "type": "UUUF",
+    "named": false
+  },
+  {
+    "type": "UUUFF",
+    "named": false
+  },
+  {
+    "type": "UUUFFF",
     "named": false
   },
   {

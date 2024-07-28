@@ -1,6 +1,5 @@
-vars
-    // [0] for the first controller, [1] for the second
-    Pad[__controllers] pads = Pad[__controllers]() // __controllers is set by --controllers option.
-
-    U[__controllers] raw_pads = U[__controllers](0)
-    : +zero_page
+ struct Ball
+     UF x
+     UF y
+     SF vx
+     SF vy
