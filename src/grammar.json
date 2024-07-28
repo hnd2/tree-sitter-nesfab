@@ -3927,19 +3927,15 @@
       ]
     },
     "fixed_point_type": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "UF"
+          "type": "SYMBOL",
+          "name": "integer_type"
         },
         {
-          "type": "STRING",
-          "value": "SSF"
-        },
-        {
-          "type": "STRING",
-          "value": "UFFF"
+          "type": "SYMBOL",
+          "name": "unit_fractional_type"
         }
       ]
     },

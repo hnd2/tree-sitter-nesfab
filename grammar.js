@@ -624,7 +624,7 @@ module.exports = grammar({
       ),
     integer_type: (_) => choice("U", "UU", "UUU", "S", "SS", "SSS"),
     unit_fractional_type: (_) => choice("F", "FF", "FFF"),
-    fixed_point_type: (_) => choice("UF", "SSF", "UFFF"),
+    fixed_point_type: ($) => seq($.integer_type, $.unit_fractional_type),
     numeric_constant_type: (_) => choice("Int", "Real"),
     bool_type: (_) => "Bool",
     void_type: (_) => "Void",
