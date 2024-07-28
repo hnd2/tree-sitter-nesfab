@@ -5,7 +5,6 @@
   - [ ] array fills
   - [ ] asm
   - [ ] data, byte block
-  - [ ] curly braces
   - [ ] sizeof
   - [ ] len
   - [ ] abs

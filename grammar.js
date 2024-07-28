@@ -3,6 +3,7 @@ const hexDigits = /[\da-fA-F]+/;
 const binaryDigits = /[01]+/;
 
 const PREC = {
+  parenthesized_expression: 1,
   unary_pointer: 4, // @
   unary_hardware_address: 8, //&
   unary_plus: 8, // +
@@ -38,7 +39,8 @@ const PREC = {
   binary_assign_by_bitwise_xor: 30, // ^=
   binary_assign_by_bitwise_or: 30, // |=
   binary_assign: 30, // =
-  array_type: 1,
+  label: 1,
+  array_type: -1,
   call: 5,
 };
 
@@ -62,7 +64,7 @@ module.exports = grammar({
     _simple_statements: ($) => seq($._simple_statement, $._newline),
     _simple_statement: ($) =>
       choice(
-        $.expression_statement,
+        $.expression,
         $.break_statement,
         $.continue_statement,
         $.goto_statement,
@@ -92,11 +94,9 @@ module.exports = grammar({
       ),
     _byte_block_statement: ($) => choice($.file_expression),
 
-    expression_statement: ($) =>
-      choice($.expression, $.assignment, $.augumented_assignment),
     break_statement: (_) => prec.left("break"),
     continue_statement: (_) => prec.left("continue"),
-    goto_statement: ($) => seq("goto", $.identifier),
+    goto_statement: ($) => prec.right(PREC.label, seq("goto", $.identifier)),
     return_statement: ($) => seq("return", optional($.expression)),
     swap_statement: ($) =>
       seq(
@@ -118,6 +118,8 @@ module.exports = grammar({
         $.macro_expression,
         $.mapfab_expression,
         $.audio_expression,
+        $.assignment,
+        $.augumented_assignment,
       ),
 
     primary_expression: ($) =>
@@ -130,6 +132,7 @@ module.exports = grammar({
         $.system_literal,
         $.ppu_literal,
         // $.array,
+        $.parenthesized_expression,
         $.unary_operator,
         $.binary_operator,
         $.member_access,
@@ -255,6 +258,8 @@ module.exports = grammar({
           ),
         ),
       ),
+    parenthesized_expression: ($) =>
+      prec.left(PREC.parenthesized_expression, seq("(", $.expression, ")")),
     unary_operator: ($) =>
       choice(
         ...[
@@ -267,7 +272,10 @@ module.exports = grammar({
         ].map(([operator, precedence]) =>
           prec.left(
             precedence,
-            seq(field("operator", operator), field("argument", $.expression)),
+            seq(
+              field("operator", operator),
+              field("argument", $.primary_expression),
+            ),
           ),
         ),
       ),
@@ -288,9 +296,9 @@ module.exports = grammar({
           (associativity == "right" ? prec.right : prec.left)(
             precedence,
             seq(
-              field("left", $.expression),
+              field("left", $.primary_expression),
               field("operator", operator),
-              field("right", $.expression),
+              field("right", $.primary_expression),
             ),
           ),
         ),
@@ -350,7 +358,7 @@ module.exports = grammar({
       prec.left(
         PREC.call,
         seq(
-          field("function_name", choice($.primary_expression, $.identifier)),
+          field("function_name", $.identifier),
           "(",
           optional(field("arguments", commaSep1($.primary_expression))),
           ")",
@@ -397,7 +405,7 @@ module.exports = grammar({
           ",",
           $.string_literal,
           ")",
-          optional($.modifier),
+          repeat($.modifier),
         ),
       ),
     macro_expression: ($) =>
@@ -446,9 +454,8 @@ module.exports = grammar({
       seq(
         optional("ct"),
         field("type", choice($.type, $.identifier)),
-        $.identifier,
+        field("name", $.identifier),
         optional(seq("=", field("value", $.expression))),
-        $._newline,
       ),
     struct_definition: ($) =>
       seq("struct", $.identifier, $.variable_definition_block),
@@ -526,7 +533,9 @@ module.exports = grammar({
       seq(
         optional("do"),
         "for",
-        optional(field("initialization", $.expression)),
+        optional(
+          field("initialization", choice($.expression, $.variable_definition)),
+        ),
         ";",
         optional(field("condition", $.expression)),
         ";",
@@ -546,19 +555,25 @@ module.exports = grammar({
       seq("case", field("value", $.expression), optional($.statement_block)),
     default_clause: ($) => seq("default", optional($.statement_block)),
     goto_mode_statement: ($) =>
-      seq(
-        "goto",
-        "mode",
-        field("function_name", $.identifier),
-        "(",
-        optional($.expression),
-        ")",
-        optional(alias($.goto_mode_modifier, $.modifier)),
+      prec.right(
+        PREC.label,
+        seq(
+          "goto",
+          "mode",
+          field("function_name", $.identifier),
+          "(",
+          optional($.expression),
+          ")",
+          repeat(alias($.goto_mode_modifier, $.modifier)),
+        ),
       ),
     goto_mode_modifier: ($) =>
       seq(":", "preserves", optional($.group_identifier)),
     label_statement: ($) =>
-      seq("label", $.identifier, optional($.statement_block)),
+      prec.right(
+        PREC.label,
+        seq("label", $.identifier, optional($.statement_block)),
+      ),
     modifier: ($) =>
       seq(
         ":",

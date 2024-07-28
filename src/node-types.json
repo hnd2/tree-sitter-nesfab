@@ -200,7 +200,7 @@
         "required": true,
         "types": [
           {
-            "type": "expression",
+            "type": "primary_expression",
             "named": true
           }
         ]
@@ -256,7 +256,7 @@
         "required": true,
         "types": [
           {
-            "type": "expression",
+            "type": "primary_expression",
             "named": true
           }
         ]
@@ -307,10 +307,6 @@
         "types": [
           {
             "type": "identifier",
-            "named": true
-          },
-          {
-            "type": "primary_expression",
             "named": true
           }
         ]
@@ -542,7 +538,15 @@
       "required": true,
       "types": [
         {
+          "type": "assignment",
+          "named": true
+        },
+        {
           "type": "audio_expression",
+          "named": true
+        },
+        {
+          "type": "augumented_assignment",
           "named": true
         },
         {
@@ -563,29 +567,6 @@
         },
         {
           "type": "primary_expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "expression_statement",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "assignment",
-          "named": true
-        },
-        {
-          "type": "augumented_assignment",
-          "named": true
-        },
-        {
-          "type": "expression",
           "named": true
         }
       ]
@@ -666,6 +647,10 @@
         "types": [
           {
             "type": "expression",
+            "named": true
+          },
+          {
+            "type": "variable_definition",
             "named": true
           }
         ]
@@ -1111,7 +1096,7 @@
           "named": true
         },
         {
-          "type": "expression_statement",
+          "type": "expression",
           "named": true
         },
         {
@@ -1205,6 +1190,21 @@
     "fields": {}
   },
   {
+    "type": "parenthesized_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "pointer_addressable_array_type",
     "named": true,
     "fields": {},
@@ -1271,6 +1271,10 @@
         },
         {
           "type": "numeric_literal",
+          "named": true
+        },
+        {
+          "type": "parenthesized_expression",
           "named": true
         },
         {
@@ -1437,7 +1441,7 @@
           "named": true
         },
         {
-          "type": "expression_statement",
+          "type": "expression",
           "named": true
         },
         {
@@ -1692,7 +1696,7 @@
         "required": true,
         "types": [
           {
-            "type": "expression",
+            "type": "primary_expression",
             "named": true
           }
         ]
@@ -1764,6 +1768,16 @@
     "type": "variable_definition",
     "named": true,
     "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
       "type": {
         "multiple": false,
         "required": true,
@@ -1788,16 +1802,6 @@
           }
         ]
       }
-    },
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
     }
   },
   {
