@@ -1791,6 +1791,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "group_identifier",
+          "named": true
+        }
+      ]
     }
   },
   {

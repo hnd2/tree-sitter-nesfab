@@ -454,6 +454,7 @@ module.exports = grammar({
       seq(
         optional("ct"),
         field("type", choice($.type, $.identifier)),
+        optional($.group_identifier),
         field("name", $.identifier),
         optional(seq("=", field("value", $.expression))),
       ),

@@ -3,3 +3,8 @@
      UF y
      SF vx
      SF vy
+
+struct Player
+    U x
+    U y
+    CCC/sprites metasprite
