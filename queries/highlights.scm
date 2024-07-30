@@ -1,4 +1,5 @@
 (type) @type
+(array_type) @type
 (identifier) @identifier
 
 (function_definition
