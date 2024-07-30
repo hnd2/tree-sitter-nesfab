@@ -3,45 +3,43 @@ const hexDigits = /[\da-fA-F]+/;
 const binaryDigits = /[01]+/;
 
 const PREC = {
-  parenthesized_expression: 1,
-  unary_pointer: 4, // @
-  unary_hardware_address: 8, //&
-  unary_plus: 8, // +
-  unary_negate: 8, // -
-  unary_bitwise_not: 8, // ~
-  unary_logical_not: 8, // !
-  binary_multiply: 10, // *
-  binary_add: 11, // *
-  binary_subtract: 11, // -
-  binary_rotate_left: 12, // <-<
-  binary_rotate_right: 13, // >->
-  binary_shift_left: 14, // <<
-  binary_shift_right: 14, // >>
-  binary_bitwise_and: 15, // &
-  binary_bitwise_xor: 16, // ^
-  binary_bitwize_or: 17, // |
-  binary_less_than: 18, // <
-  binary_less_than_or_equal: 18, // <=
-  binary_greater_than: 18, // >
-  binary_greater_than_or_equal: 18, // >=
-  binary_equal_to: 19, // ==
-  binary_not_equal_to: 19, // !=
+  binary_assign: 10, // =
+  binary_assign_by_bitwise_or: 10, // |=
+  binary_assign_by_bitwise_xor: 10, // ^=
+  binary_assign_by_bitwise_and: 10, // &=
+  binary_assign_by_shift_right: 10, // >>=
+  binary_assign_by_shift_left: 10, // <<=
+  binary_assign_by_subtract: 10, // -=
+  binary_assign_by_add: 10, // +=
+  binary_assign_by_multiply: 10, // *=
+  binary_assign_by_rotate_right: 11, // >=>,
+  binary_assign_by_rotate_left: 12, // <=<
+  binary_logical_or: 19, // ||
   binary_logical_and: 20, // &&
-  binary_logical_or: 21, // ||
-  binary_assign_by_rotate_left: 28, // <=<
-  binary_assign_by_rotate_right: 29, // >=>,
-  binary_assign_by_multiply: 30, // *=
-  binary_assign_by_add: 30, // +=
-  binary_assign_by_subtract: 30, // -=
-  binary_assign_by_shift_left: 30, // <<=
-  binary_assign_by_shift_right: 30, // >>=
-  binary_assign_by_bitwise_and: 30, // &=
-  binary_assign_by_bitwise_xor: 30, // ^=
-  binary_assign_by_bitwise_or: 30, // |=
-  binary_assign: 30, // =
-  label: 1,
-  call: 5,
-  subscript: 6,
+  binary_not_equal_to: 21, // !=
+  binary_equal_to: 21, // ==
+  binary_greater_than_or_equal: 22, // >=
+  binary_greater_than: 22, // >
+  binary_less_than_or_equal: 22, // <=
+  binary_less_than: 22, // <
+  binary_bitwize_or: 23, // |
+  binary_bitwise_xor: 24, // ^
+  binary_bitwise_and: 25, // &
+  binary_shift_right: 26, // >>
+  binary_shift_left: 26, // <<
+  binary_rotate_right: 27, // >->
+  binary_rotate_left: 28, // <-<
+  binary_subtract: 29, // -
+  binary_add: 29, // *
+  binary_multiply: 30, // *
+  unary_logical_not: 32, // !
+  unary_bitwise_not: 32, // ~
+  unary_negate: 32, // -
+  unary_plus: 32, // +
+  unary_hardware_address: 32, //&
+  unary_pointer: 36, // @
+  call: 40,
+  subscript: 41,
 };
 
 module.exports = grammar({
@@ -49,7 +47,11 @@ module.exports = grammar({
 
   extras: ($) => [$.comment, $.line_continuation, /\s|\r?\n/],
   inline: ($) => [],
-  conflicts: ($) => [],
+  conflicts: ($) => [
+    [$.expression, $.typed_element_array_type],
+    [$.data_definition],
+    [$.file_expression],
+  ],
   externals: ($) => [$._indent, $._dedent, $._newline],
   word: ($) => $.identifier,
   supertypes: ($) => [],
@@ -93,35 +95,17 @@ module.exports = grammar({
         $.chrrom_definition,
       ),
 
-    break_statement: (_) => prec.left("break"),
-    continue_statement: (_) => prec.left("continue"),
-    goto_statement: ($) => prec.right(PREC.label, seq("goto", $.identifier)),
+    break_statement: (_) => "break",
+    continue_statement: (_) => "continue",
+    goto_statement: ($) => seq("goto", $.identifier),
     return_statement: ($) => seq("return", optional($.expression)),
-    swap_statement: ($) =>
-      seq(
-        "swap",
-        field("left", $.identifier),
-        ",",
-        field("right", $.identifier),
-      ),
-    fence_statement: (_) => prec.left("fence"),
-    nmi_statement: (_) => prec.left("nmi"),
+    swap_statement: ($) => seq("swap", $.identifier, ",", $.identifier),
+    fence_statement: (_) => "fence",
+    nmi_statement: (_) => "nmi",
     irq_statement: ($) => seq("irq", optional($.boolean_literal)),
 
     // expression
     expression: ($) =>
-      choice(
-        $.primary_expression,
-        $.comparison_operator,
-        $.file_expression,
-        $.macro_expression,
-        $.mapfab_expression,
-        $.audio_expression,
-        $.assignment,
-        $.augumented_assignment,
-      ),
-
-    primary_expression: ($) =>
       choice(
         $.identifier,
         $.boolean_literal,
@@ -130,10 +114,12 @@ module.exports = grammar({
         $.string_literal,
         $.system_literal,
         $.ppu_literal,
-        // $.array,
         $.parenthesized_expression,
         $.unary_operator,
         $.binary_operator,
+        $.comparison_operator,
+        $.assignment,
+        $.augumented_assignment,
         $.member_access,
         $.u_indexed_subscript,
         $.uu_indexed_subscript,
@@ -142,14 +128,16 @@ module.exports = grammar({
         $.len_expression,
         $.abs_expression,
         $.minmax_expression,
-        $.type_cast,
-        $.zero_initialization,
-        $.array_initialization,
+        $.type_cast_or_initialization,
         $.banked_pointer_initialization,
         $.read,
         $.hardware_read,
         $.ready,
         $.nmi_counter,
+        $.file_expression,
+        $.macro_expression,
+        $.mapfab_expression,
+        $.audio_expression,
       ),
 
     // literals
@@ -233,14 +221,7 @@ module.exports = grammar({
 
     // operator
     assignment: ($) =>
-      prec.right(
-        PREC.binary_assign,
-        seq(
-          field("left", $.expression),
-          field("operator", "="),
-          field("right", $.expression),
-        ),
-      ),
+      prec.right(PREC.binary_assign, seq($.expression, "=", $.expression)),
     augumented_assignment: ($) =>
       choice(
         ...[
@@ -257,16 +238,11 @@ module.exports = grammar({
         ].map(([operator, precedence, associativity]) =>
           (associativity == "right" ? prec.right : prec.left)(
             precedence,
-            seq(
-              field("left", $.expression),
-              field("operator", operator),
-              field("right", $.expression),
-            ),
+            seq($.expression, operator, $.expression),
           ),
         ),
       ),
-    parenthesized_expression: ($) =>
-      prec.left(PREC.parenthesized_expression, seq("(", $.expression, ")")),
+    parenthesized_expression: ($) => seq("(", $.expression, ")"),
     unary_operator: ($) =>
       choice(
         ...[
@@ -277,13 +253,7 @@ module.exports = grammar({
           ["~", PREC.unary_bitwise_not],
           ["!", PREC.unary_logical_not],
         ].map(([operator, precedence]) =>
-          prec.left(
-            precedence,
-            seq(
-              field("operator", operator),
-              field("argument", $.primary_expression),
-            ),
-          ),
+          prec.left(precedence, seq(operator, $.expression)),
         ),
       ),
     binary_operator: ($) =>
@@ -302,11 +272,7 @@ module.exports = grammar({
         ].map(([operator, precedence, associativity]) =>
           (associativity == "right" ? prec.right : prec.left)(
             precedence,
-            seq(
-              field("left", $.primary_expression),
-              field("operator", operator),
-              field("right", $.primary_expression),
-            ),
+            seq($.expression, operator, $.expression),
           ),
         ),
       ),
@@ -322,183 +288,84 @@ module.exports = grammar({
           ["&&", PREC.binary_logical_and],
           ["||", PREC.binary_logical_or],
         ].map(([operator, precedence, associativity]) =>
-          prec.left(
-            precedence,
-            seq(
-              field("left", $.expression),
-              field("operator", operator),
-              field("right", $.expression),
-            ),
-          ),
+          prec.left(precedence, seq($.expression, operator, $.expression)),
         ),
       ),
     member_access: ($) =>
-      prec.left(
-        PREC.call,
-        seq(
-          field("left", $.expression),
-          field("operator", "."),
-          field("right", $.expression),
-        ),
-      ),
+      prec.left(PREC.subscript, seq($.expression, ".", $.identifier)),
     u_indexed_subscript: ($) =>
-      prec.left(
-        PREC.subscript,
-        seq(
-          field("value", $.primary_expression),
-          "[",
-          field("index", $.expression),
-          "]",
-        ),
-      ),
+      prec.left(PREC.subscript, seq($.expression, "[", $.expression, "]")),
     uu_indexed_subscript: ($) =>
-      prec.left(
-        PREC.subscript,
-        seq(
-          field("value", $.primary_expression),
-          "{",
-          field("index", $.expression),
-          "}",
-        ),
-      ),
+      prec.left(PREC.subscript, seq($.expression, "{", $.expression, "}")),
     call: ($) =>
       prec.left(
         PREC.call,
-        seq(
-          field("function_name", $.identifier),
-          "(",
-          optional(field("arguments", commaSep1($.primary_expression))),
-          ")",
-        ),
+        seq($.identifier, "(", optional(commaSep1($.expression)), ")"),
       ),
-    type_cast: ($) =>
-      prec.left(
-        PREC.call,
-        seq(
-          field("type", $.type),
-          "(",
-          field("value", $.primary_expression),
-          ")",
-        ),
-      ),
-    zero_initialization: ($) => prec.left(PREC.call, seq($.type, "()")),
-    array_initialization: ($) =>
-      prec.left(
-        PREC.call,
-        seq($.array_type, "(", commaSep1($.primary_expression), ")"),
-      ),
+    type_cast_or_initialization: ($) =>
+      seq($.type, "(", optional(commaSep1($.expression)), ")"),
     banked_pointer_initialization: ($) =>
-      prec.left(
-        PREC.call,
-        seq(
-          $.type,
-          $.group_identifier,
-          "(",
-          field("address", $.primary_expression),
-          ",",
-          field("bank", $.primary_expression),
-          ")",
-        ),
-      ),
-    read: ($) =>
-      seq("read", $.type, "(", field("pointer", $.primary_expression), ")"),
-    write: ($) =>
       seq(
-        "write",
         $.type,
+        $.group_identifier,
         "(",
-        field("pointer", $.primary_expression),
+        $.expression,
         ",",
-        field("value", $.primary_expression),
+        $.expression,
         ")",
       ),
-    hardware_read: ($) =>
-      prec.left(
-        PREC.call,
-        seq("{", field("address", commaSep1($.expression)), "}", "()"),
-      ),
+    read: ($) => seq("read", $.type, "(", $.expression, ")"),
+    write: ($) =>
+      seq("write", $.type, "(", $.expression, ",", $.expression, ")"),
+    hardware_read: ($) => seq("{", commaSep1($.expression), "}", "()"),
     hardware_write: ($) =>
-      prec.left(
-        PREC.call,
-        seq(
-          "{",
-          field("address", commaSep1($.expression)),
-          "}",
-          "(",
-          field("value", commaSep1($.expression)),
-          ")",
-        ),
-      ),
-    ready: (_) => prec.left("ready"),
-    nmi_counter: (_) => prec.left("nmi_counter"),
+      seq("{", commaSep1($.expression), "}", "(", commaSep1($.expression), ")"),
+    ready: (_) => "ready",
+    nmi_counter: (_) => "nmi_counter",
     file_expression: ($) =>
-      prec.left(
-        PREC.call,
-        seq(
-          field("function_name", alias("file", $.identifier)),
-          "(",
-          field("target", $.file_target),
-          ",",
-          $.string_literal,
-          ")",
-          repeat($.modifier),
-        ),
+      seq(
+        "file",
+        "(",
+        $.file_target,
+        ",",
+        $.string_literal,
+        ")",
+        repeat($.modifier),
       ),
     macro_expression: ($) =>
-      prec.left(
-        PREC.call,
-        seq(
-          field("function_name", alias("macro", $.identifier)),
-          "(",
-          commaSep1($.string_literal),
-          ")",
-        ),
-      ),
+      seq("macro", "(", commaSep1($.string_literal), ")"),
     mapfab_expression: ($) =>
-      prec.left(
-        PREC.call,
-        seq(
-          field("function_name", alias("mapfab", $.identifier)),
-          "(",
-          field("target", $.mapfab_target),
-          optional(seq(",", commaSep1($.string_literal))),
-          ")",
-        ),
+      seq(
+        "mapfab",
+        "(",
+        $.mapfab_target,
+        optional(seq(",", commaSep1($.string_literal))),
+        ")",
       ),
     audio_expression: ($) =>
-      prec.left(
-        PREC.call,
-        seq(
-          field("function_name", alias("audio", $.identifier)),
-          "(",
-          field("target", $.audio_target),
-          optional(seq(",", commaSep1($.string_literal))),
-          ")",
-        ),
+      seq(
+        "audio",
+        "(",
+        $.audio_target,
+        optional(seq(",", commaSep1($.string_literal))),
+        ")",
       ),
     file_target: (_) => choice("chr", "raw", "fmt", "pbz", "donut", "rlz"),
     mapfab_target: ($) => choice("raw", "pbz", "rlz", "mmt_32"),
     audio_target: (_) => choice("puf1_sfx", "puf1_music"),
     sizeof_expression: ($) =>
-      prec.left(
+      prec.right(
         PREC.call,
-        choice(
-          seq("sizeof", $.type),
-          seq("sizeof", "(", $.primary_expression, ")"),
-        ),
+        choice(seq("sizeof", $.type), seq("sizeof", "(", $.expression, ")")),
       ),
     len_expression: ($) =>
-      prec.left(
+      prec.right(
         PREC.call,
-        choice(seq("len", $.type), seq("len", "(", $.primary_expression, ")")),
+        choice(seq("len", $.type), seq("len", "(", $.expression, ")")),
       ),
-    abs_expression: ($) =>
-      prec.left(PREC.call, seq("abs", "(", $.primary_expression, ")")),
+    abs_expression: ($) => seq("abs", "(", $.expression, ")"),
     minmax_expression: ($) =>
-      prec.left(
-        PREC.call,
-        seq(choice("min", "max"), "(", commaSep1($.primary_expression), ")"),
-      ),
+      seq(choice("min", "max"), "(", commaSep1($.expression), ")"),
 
     // compound statement
     variable_definition_block: ($) =>
@@ -507,17 +374,18 @@ module.exports = grammar({
     variable_definition: ($) =>
       seq(
         optional("ct"),
-        field("type", choice($.type, $.identifier)),
+        choice($.type, $.identifier),
         optional($.group_identifier),
-        field("name", $.identifier),
-        optional(seq("=", field("value", $.expression))),
+        $.identifier,
+        optional(seq("=", $.expression)),
       ),
     struct_definition: ($) =>
       seq("struct", $.identifier, $.variable_definition_block),
     vars_definition: ($) =>
       seq(
         "vars",
-        optional(field("name", $.group_identifier)),
+        optional($.group_identifier),
+        repeat($.modifier),
         seq(
           $._indent,
           repeat(seq($.variable_definition, repeat($.modifier))),
@@ -525,13 +393,11 @@ module.exports = grammar({
         ),
       ),
     data_definition: ($) =>
-      prec.right(
-        seq(
-          optional("omni"),
-          "data",
-          field("name", $.group_identifier),
-          repeat($.constant_definition),
-        ),
+      seq(
+        optional("omni"),
+        "data",
+        $.group_identifier,
+        repeat($.constant_definition),
       ),
     charmap_definition: ($) =>
       seq(
@@ -543,15 +409,15 @@ module.exports = grammar({
         ")",
       ),
     chrrom_definition: ($) =>
-      seq("chrrom", optional($.primary_expression), $.byte_block),
+      seq("chrrom", optional($.expression), $.byte_block),
     function_definition: ($) =>
       seq(
         choice(seq(optional("ct"), "fn"), "mode", "nmi", "irq"),
-        field("function_name", $.identifier),
+        $.identifier,
         "(",
-        optional(field("arguments", commaSep1($.function_argument))),
+        optional(commaSep1($.function_argument)),
         ")",
-        optional(field("return_type", $.type)),
+        optional($.type),
         repeat($.modifier),
         $.statement_block,
       ),
@@ -572,21 +438,19 @@ module.exports = grammar({
         optional("do"),
         "while",
         $.expression,
-        repeat(alias($.loop_modifier, $.modifier)),
+        repeat($.loop_modifier),
         optional($.statement_block),
       ),
     for_statement: ($) =>
       seq(
         optional("do"),
         "for",
-        optional(
-          field("initialization", choice($.expression, $.variable_definition)),
-        ),
+        optional(choice($.expression, $.variable_definition)),
         ";",
-        optional(field("condition", $.expression)),
+        optional($.expression),
         ";",
-        optional(field("iteration", $.expression)),
-        repeat(alias($.loop_modifier, $.modifier)),
+        optional($.expression),
+        repeat($.loop_modifier),
         $.statement_block,
       ),
     switch_statement: ($) =>
@@ -597,29 +461,22 @@ module.exports = grammar({
         repeat(choice($.case_clause, $.default_clause)),
         $._dedent,
       ),
-    case_clause: ($) =>
-      seq("case", field("value", $.expression), optional($.statement_block)),
+    case_clause: ($) => seq("case", $.expression, optional($.statement_block)),
     default_clause: ($) => seq("default", optional($.statement_block)),
     goto_mode_statement: ($) =>
-      prec.right(
-        PREC.label,
-        seq(
-          "goto",
-          "mode",
-          field("function_name", $.identifier),
-          "(",
-          optional($.expression),
-          ")",
-          repeat(alias($.goto_mode_modifier, $.modifier)),
-        ),
+      seq(
+        "goto",
+        "mode",
+        $.identifier,
+        "(",
+        optional($.expression),
+        ")",
+        repeat($.goto_mode_modifier),
       ),
     goto_mode_modifier: ($) =>
       seq(":", "preserves", optional($.group_identifier)),
     label_statement: ($) =>
-      prec.right(
-        PREC.label,
-        seq("label", $.identifier, optional($.statement_block)),
-      ),
+      seq("label", $.identifier, optional($.statement_block)),
     modifier: ($) =>
       seq(
         ":",
@@ -658,28 +515,22 @@ module.exports = grammar({
     constant_definition: ($) =>
       seq(
         "[",
-        optional($.primary_expression),
+        optional($.expression),
         "]",
-        field("name", $.identifier),
+        $.identifier,
         $.byte_block,
         repeat($.modifier),
       ),
     byte_block: ($) =>
       seq(
         $._indent,
-        // typed_data is same as type_cast, zero_initialization, array_initialization
+        // typed_data is same as type_cast
         repeat(
-          choice(
-            $.type_cast,
-            $.zero_initialization,
-            $.array_initialization,
-            $.untyped_data,
-            $.op_statement,
-          ),
+          choice($.type_cast_or_initialization, $.untyped_data, $.op_statement),
         ),
         $._dedent,
       ),
-    untyped_data: ($) => seq("(", $.primary_expression, ")"),
+    untyped_data: ($) => seq("(", $.expression, ")"),
     op_statement: ($) =>
       seq(
         $.op_code,
@@ -768,7 +619,10 @@ module.exports = grammar({
       ),
 
     // types
-    type: ($) => choice($.scalar_type, $.quantity_type, $.array_type),
+    type: ($) =>
+      prec.left(
+        choice($.scalar_type, $.quantity_type, $.array_type, $.identifier),
+      ),
     scalar_type: ($) =>
       choice(
         $.integer_type,
@@ -818,22 +672,16 @@ module.exports = grammar({
         $.pointer_addressable_array_type,
       ),
     typed_element_array_type: ($) =>
-      prec.left(
-        PREC.subscript,
-        seq(
-          choice($.scalar_type, $.quantity_type, $.identifier),
-          "[",
-          optional($.numeric_literal),
-          "]",
-        ),
+      seq(
+        choice($.scalar_type, $.quantity_type, $.identifier),
+        "[",
+        optional(choice($.numeric_literal, $.identifier)),
+        "]",
       ),
     vector_type: ($) =>
-      prec.left(
-        PREC.subscript,
-        seq(choice($.scalar_type, $.quantity_type, $.identifier), "{}"),
-      ),
+      seq(choice($.scalar_type, $.quantity_type, $.identifier), "{}"),
     pointer_addressable_array_type: ($) =>
-      prec.left(PREC.subscript, seq("[", optional($.numeric_literal), "]")),
+      seq("[", optional(choice($.numeric_literal, $.identifier)), "]"),
 
     // etc
     line_continuation: (_) =>
