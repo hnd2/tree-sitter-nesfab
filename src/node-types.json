@@ -1,5 +1,20 @@
 [
   {
+    "type": "abs_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "primary_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "address_type",
     "named": true,
     "fields": {}
@@ -186,6 +201,46 @@
       "types": [
         {
           "type": "escape_sequence",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "banked_pointer_initialization",
+    "named": true,
+    "fields": {
+      "address": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "primary_expression",
+            "named": true
+          }
+        ]
+      },
+      "bank": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "primary_expression",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "group_identifier",
+          "named": true
+        },
+        {
+          "type": "type",
           "named": true
         }
       ]
@@ -939,6 +994,25 @@
     }
   },
   {
+    "type": "len_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "primary_expression",
+          "named": true
+        },
+        {
+          "type": "type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "macro_expression",
     "named": true,
     "fields": {
@@ -1039,6 +1113,21 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "minmax_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "primary_expression",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -1227,6 +1316,14 @@
       "required": true,
       "types": [
         {
+          "type": "abs_expression",
+          "named": true
+        },
+        {
+          "type": "banked_pointer_initialization",
+          "named": true
+        },
+        {
           "type": "binary_operator",
           "named": true
         },
@@ -1251,7 +1348,15 @@
           "named": true
         },
         {
+          "type": "len_expression",
+          "named": true
+        },
+        {
           "type": "member_access",
+          "named": true
+        },
+        {
+          "type": "minmax_expression",
           "named": true
         },
         {
@@ -1279,11 +1384,19 @@
           "named": true
         },
         {
+          "type": "sizeof_expression",
+          "named": true
+        },
+        {
           "type": "string_literal",
           "named": true
         },
         {
           "type": "system_literal",
+          "named": true
+        },
+        {
+          "type": "type_cast",
           "named": true
         },
         {
@@ -1296,6 +1409,10 @@
         },
         {
           "type": "uu_indexed_subscript",
+          "named": true
+        },
+        {
+          "type": "zero_initialization",
           "named": true
         }
       ]
@@ -1400,6 +1517,25 @@
         },
         {
           "type": "void_type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sizeof_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "primary_expression",
+          "named": true
+        },
+        {
+          "type": "type",
           "named": true
         }
       ]
@@ -1621,6 +1757,32 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "type_cast",
+    "named": true,
+    "fields": {
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "primary_expression",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -1919,6 +2081,21 @@
         ]
       }
     },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "zero_initialization",
+    "named": true,
+    "fields": {},
     "children": {
       "multiple": false,
       "required": true,
@@ -2375,6 +2552,10 @@
     "named": false
   },
   {
+    "type": "abs",
+    "named": false
+  },
+  {
     "type": "bool_type",
     "named": true
   },
@@ -2491,8 +2672,20 @@
     "named": false
   },
   {
+    "type": "len",
+    "named": false
+  },
+  {
     "type": "line_continuation",
     "named": true
+  },
+  {
+    "type": "max",
+    "named": false
+  },
+  {
+    "type": "min",
+    "named": false
   },
   {
     "type": "mmt_32",
@@ -2560,6 +2753,10 @@
   },
   {
     "type": "rlz",
+    "named": false
+  },
+  {
+    "type": "sizeof",
     "named": false
   },
   {

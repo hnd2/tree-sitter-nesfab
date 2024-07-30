@@ -40,8 +40,8 @@ const PREC = {
   binary_assign_by_bitwise_or: 30, // |=
   binary_assign: 30, // =
   label: 1,
-  array_type: -1,
   call: 5,
+  subscript: 6,
 };
 
 module.exports = grammar({
@@ -92,7 +92,6 @@ module.exports = grammar({
         $.label_statement,
         $.chrrom_definition,
       ),
-    _byte_block_statement: ($) => choice($.file_expression),
 
     break_statement: (_) => prec.left("break"),
     continue_statement: (_) => prec.left("continue"),
@@ -139,6 +138,13 @@ module.exports = grammar({
         $.u_indexed_subscript,
         $.uu_indexed_subscript,
         $.call,
+        $.sizeof_expression,
+        $.len_expression,
+        $.abs_expression,
+        $.minmax_expression,
+        $.type_cast,
+        $.zero_initialization,
+        $.banked_pointer_initialization,
         $.read,
         $.hardware_read,
         $.ready,
@@ -336,7 +342,7 @@ module.exports = grammar({
       ),
     u_indexed_subscript: ($) =>
       prec.left(
-        PREC.call,
+        PREC.subscript,
         seq(
           field("value", $.primary_expression),
           "[",
@@ -346,7 +352,7 @@ module.exports = grammar({
       ),
     uu_indexed_subscript: ($) =>
       prec.left(
-        PREC.call,
+        PREC.subscript,
         seq(
           field("value", $.primary_expression),
           "{",
@@ -361,6 +367,30 @@ module.exports = grammar({
           field("function_name", $.identifier),
           "(",
           optional(field("arguments", commaSep1($.primary_expression))),
+          ")",
+        ),
+      ),
+    type_cast: ($) =>
+      prec.left(
+        PREC.call,
+        seq(
+          field("type", $.type),
+          "(",
+          field("value", $.primary_expression),
+          ")",
+        ),
+      ),
+    zero_initialization: ($) => prec.left(PREC.call, seq($.type, "()")),
+    banked_pointer_initialization: ($) =>
+      prec.left(
+        PREC.call,
+        seq(
+          $.type,
+          $.group_identifier,
+          "(",
+          field("address", $.primary_expression),
+          ",",
+          field("bank", $.primary_expression),
           ")",
         ),
       ),
@@ -443,13 +473,31 @@ module.exports = grammar({
     file_target: (_) => choice("chr", "raw", "fmt", "pbz", "donut", "rlz"),
     mapfab_target: ($) => choice("raw", "pbz", "rlz", "mmt_32"),
     audio_target: (_) => choice("puf1_sfx", "puf1_music"),
+    sizeof_expression: ($) =>
+      prec.left(
+        PREC.call,
+        choice(
+          seq("sizeof", $.type),
+          seq("sizeof", "(", $.primary_expression, ")"),
+        ),
+      ),
+    len_expression: ($) =>
+      prec.left(
+        PREC.call,
+        choice(seq("len", $.type), seq("len", "(", $.primary_expression, ")")),
+      ),
+    abs_expression: ($) =>
+      prec.left(PREC.call, seq("abs", "(", $.primary_expression, ")")),
+    minmax_expression: ($) =>
+      prec.left(
+        PREC.call,
+        seq(choice("min", "max"), "(", commaSep1($.primary_expression), ")"),
+      ),
 
     // compound statement
     variable_definition_block: ($) =>
       seq($._indent, repeat(seq($.variable_definition, $._newline)), $._dedent),
     statement_block: ($) => seq($._indent, repeat($._statement), $._dedent),
-    byte_block: ($) =>
-      seq($._indent, repeat($._byte_block_statement), $._dedent),
     variable_definition: ($) =>
       seq(
         optional("ct"),
@@ -470,27 +518,10 @@ module.exports = grammar({
           $._dedent,
         ),
       ),
-    /*
-      data_definition: ($) =>
-      seq(
-        optional("omni"),
-        "data",
-        $.group_identifier,
-        $.data_constant_definition_block,
-      ),
-    byte_block_definition: ($) =>
-      seq(
-        "[",
-        optional($.numeric_literal),
-        "]",
-        $.identifier,
-        $._indent,
-        repeat(choice($.typed_data, $.untyped_data)),
-        $._dedent,
-      ),
+    data_definition: ($) =>
+      seq(optional("omni"), "data", $.group_identifier, $.byte_block),
     typed_data: ($) => seq($.type, "(", commaSep1($.numeric_literal), ")"),
     untyped_data: ($) => seq("(", ")"),
-    */
     charmap_definition: ($) =>
       seq(
         "charmap",
@@ -612,6 +643,11 @@ module.exports = grammar({
       ),
     loop_modifier: (_) => seq(":", choice("-unroll", "+unroll", "+unloop")),
 
+    // byte block
+    byte_block: ($) =>
+      seq($._indent, repeat($._byte_block_statement), $._dedent),
+    _byte_block_statement: ($) => choice($.file_expression),
+
     // types
     type: ($) => choice($.scalar_type, $.quantity_type, $.array_type),
     scalar_type: ($) =>
@@ -664,7 +700,7 @@ module.exports = grammar({
       ),
     typed_element_array_type: ($) =>
       prec.left(
-        PREC.array_type,
+        PREC.subscript,
         seq(
           choice($.scalar_type, $.quantity_type, $.identifier),
           "[",
@@ -674,11 +710,11 @@ module.exports = grammar({
       ),
     vector_type: ($) =>
       prec.left(
-        PREC.array_type,
+        PREC.subscript,
         seq(choice($.scalar_type, $.quantity_type, $.identifier), "{}"),
       ),
     pointer_addressable_array_type: ($) =>
-      seq("[", optional($.numeric_literal), "]"),
+      prec.left(PREC.subscript, seq("[", optional($.numeric_literal), "]")),
 
     // etc
     line_continuation: (_) =>

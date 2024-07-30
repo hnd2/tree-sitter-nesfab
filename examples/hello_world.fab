@@ -1,10 +1,9 @@
- struct Ball
-     UF x
-     UF y
-     SF vx
-     SF vy
+ct Int uu_size = sizeof UU
+ct Int expr_size = sizeof(1 + 2 + 3)
 
-struct Player
-    U x
-    U y
-    CCC/sprites metasprite
+ct Int array_len = len UU[10]
+ct Int expr_len = len(U[10](3))
+
+UU positive = abs(SS(-10))
+SS smallest = min(10, 20, 30)
+SS largest = max(10, 20, 30)
