@@ -398,7 +398,7 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "abs_expression",
@@ -473,10 +473,6 @@
           "named": true
         },
         {
-          "type": "nmi_counter",
-          "named": true
-        },
-        {
           "type": "numeric_literal",
           "named": true
         },
@@ -490,10 +486,6 @@
         },
         {
           "type": "read",
-          "named": true
-        },
-        {
-          "type": "ready",
           "named": true
         },
         {
@@ -930,10 +922,6 @@
       "required": false,
       "types": [
         {
-          "type": "break_statement",
-          "named": true
-        },
-        {
           "type": "charmap_definition",
           "named": true
         },
@@ -942,19 +930,11 @@
           "named": true
         },
         {
-          "type": "continue_statement",
-          "named": true
-        },
-        {
           "type": "data_definition",
           "named": true
         },
         {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "fence_statement",
           "named": true
         },
         {
@@ -987,10 +967,6 @@
         },
         {
           "type": "label_statement",
-          "named": true
-        },
-        {
-          "type": "nmi_statement",
           "named": true
         },
         {
@@ -1027,11 +1003,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "nmi_statement",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "numeric_constant_type",
@@ -1245,10 +1216,6 @@
       "required": false,
       "types": [
         {
-          "type": "break_statement",
-          "named": true
-        },
-        {
           "type": "charmap_definition",
           "named": true
         },
@@ -1257,19 +1224,11 @@
           "named": true
         },
         {
-          "type": "continue_statement",
-          "named": true
-        },
-        {
           "type": "data_definition",
           "named": true
         },
         {
           "type": "expression",
-          "named": true
-        },
-        {
-          "type": "fence_statement",
           "named": true
         },
         {
@@ -1302,10 +1261,6 @@
         },
         {
           "type": "label_statement",
-          "named": true
-        },
-        {
-          "type": "nmi_statement",
           "named": true
         },
         {
@@ -2209,8 +2164,8 @@
     "named": false
   },
   {
-    "type": "break_statement",
-    "named": true
+    "type": "break",
+    "named": false
   },
   {
     "type": "brk",
@@ -2265,8 +2220,8 @@
     "named": true
   },
   {
-    "type": "continue_statement",
-    "named": true
+    "type": "continue",
+    "named": false
   },
   {
     "type": "cpx",
@@ -2337,8 +2292,8 @@
     "named": true
   },
   {
-    "type": "fence_statement",
-    "named": true
+    "type": "fence",
+    "named": false
   },
   {
     "type": "file",
@@ -2466,7 +2421,7 @@
   },
   {
     "type": "nmi_counter",
-    "named": true
+    "named": false
   },
   {
     "type": "nop",
@@ -2534,7 +2489,7 @@
   },
   {
     "type": "ready",
-    "named": true
+    "named": false
   },
   {
     "type": "return",

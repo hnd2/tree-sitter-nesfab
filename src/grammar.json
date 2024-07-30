@@ -61,14 +61,6 @@
         },
         {
           "type": "SYMBOL",
-          "name": "break_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "continue_statement"
-        },
-        {
-          "type": "SYMBOL",
           "name": "goto_statement"
         },
         {
@@ -81,14 +73,6 @@
         },
         {
           "type": "SYMBOL",
-          "name": "fence_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "nmi_statement"
-        },
-        {
-          "type": "SYMBOL",
           "name": "irq_statement"
         },
         {
@@ -98,6 +82,22 @@
         {
           "type": "SYMBOL",
           "name": "hardware_write"
+        },
+        {
+          "type": "STRING",
+          "value": "break"
+        },
+        {
+          "type": "STRING",
+          "value": "continue"
+        },
+        {
+          "type": "STRING",
+          "value": "fence"
+        },
+        {
+          "type": "STRING",
+          "value": "nmi"
         }
       ]
     },
@@ -158,14 +158,6 @@
         }
       ]
     },
-    "break_statement": {
-      "type": "STRING",
-      "value": "break"
-    },
-    "continue_statement": {
-      "type": "STRING",
-      "value": "continue"
-    },
     "goto_statement": {
       "type": "SEQ",
       "members": [
@@ -220,14 +212,6 @@
           "name": "identifier"
         }
       ]
-    },
-    "fence_statement": {
-      "type": "STRING",
-      "value": "fence"
-    },
-    "nmi_statement": {
-      "type": "STRING",
-      "value": "nmi"
     },
     "irq_statement": {
       "type": "SEQ",
@@ -355,14 +339,6 @@
         },
         {
           "type": "SYMBOL",
-          "name": "ready"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "nmi_counter"
-        },
-        {
-          "type": "SYMBOL",
           "name": "file_expression"
         },
         {
@@ -376,6 +352,14 @@
         {
           "type": "SYMBOL",
           "name": "audio_expression"
+        },
+        {
+          "type": "STRING",
+          "value": "nmi_counter"
+        },
+        {
+          "type": "STRING",
+          "value": "ready"
         }
       ]
     },
@@ -1983,14 +1967,6 @@
           "value": ")"
         }
       ]
-    },
-    "ready": {
-      "type": "STRING",
-      "value": "ready"
-    },
-    "nmi_counter": {
-      "type": "STRING",
-      "value": "nmi_counter"
     },
     "file_expression": {
       "type": "SEQ",

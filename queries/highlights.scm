@@ -8,16 +8,16 @@
     (identifier) @function
 )
 (file_expression
-    (identifier) @function.special
+    "file" @function.special
 )
 (macro_expression
-    function_name: (identifier) @function.special
+    "macro" @function.special
 )
 (mapfab_expression
-    function_name: (identifier) @function.special
+    "mapfab" @function.special
 )
 (audio_expression
-    function_name: (identifier) @function.special
+    "audio" @function.special
 )
 
 [

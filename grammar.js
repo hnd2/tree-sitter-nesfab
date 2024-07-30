@@ -67,16 +67,16 @@ module.exports = grammar({
     _simple_statement: ($) =>
       choice(
         $.expression,
-        $.break_statement,
-        $.continue_statement,
         $.goto_statement,
         $.return_statement,
         $.swap_statement,
-        $.fence_statement,
-        $.nmi_statement,
         $.irq_statement,
         $.write,
         $.hardware_write,
+        "break",
+        "continue",
+        "fence",
+        "nmi",
       ),
     _compound_statement: ($) =>
       choice(
@@ -95,13 +95,9 @@ module.exports = grammar({
         $.chrrom_definition,
       ),
 
-    break_statement: (_) => "break",
-    continue_statement: (_) => "continue",
     goto_statement: ($) => seq("goto", $.identifier),
     return_statement: ($) => seq("return", optional($.expression)),
     swap_statement: ($) => seq("swap", $.identifier, ",", $.identifier),
-    fence_statement: (_) => "fence",
-    nmi_statement: (_) => "nmi",
     irq_statement: ($) => seq("irq", optional($.boolean_literal)),
 
     // expression
@@ -132,12 +128,12 @@ module.exports = grammar({
         $.banked_pointer_initialization,
         $.read,
         $.hardware_read,
-        $.ready,
-        $.nmi_counter,
         $.file_expression,
         $.macro_expression,
         $.mapfab_expression,
         $.audio_expression,
+        "nmi_counter",
+        "ready",
       ),
 
     // literals
@@ -320,8 +316,6 @@ module.exports = grammar({
     hardware_read: ($) => seq("{", commaSep1($.expression), "}", "()"),
     hardware_write: ($) =>
       seq("{", commaSep1($.expression), "}", "(", commaSep1($.expression), ")"),
-    ready: (_) => "ready",
-    nmi_counter: (_) => "nmi_counter",
     file_expression: ($) =>
       seq(
         "file",
