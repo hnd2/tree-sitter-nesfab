@@ -351,7 +351,23 @@
       "required": false,
       "types": [
         {
-          "type": "file_expression",
+          "type": "array_initialization",
+          "named": true
+        },
+        {
+          "type": "op_statement",
+          "named": true
+        },
+        {
+          "type": "type_cast",
+          "named": true
+        },
+        {
+          "type": "untyped_data",
+          "named": true
+        },
+        {
+          "type": "zero_initialization",
           "named": true
         }
       ]
@@ -535,9 +551,69 @@
     }
   },
   {
+    "type": "constant_definition",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "byte_block",
+          "named": true
+        },
+        {
+          "type": "modifier",
+          "named": true
+        },
+        {
+          "type": "primary_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "continue_statement",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "data_definition",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "group_identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "constant_definition",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "default_clause",
@@ -1193,6 +1269,10 @@
           "named": true
         },
         {
+          "type": "data_definition",
+          "named": true
+        },
+        {
           "type": "expression",
           "named": true
         },
@@ -1285,6 +1365,49 @@
     "type": "numeric_constant_type",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "op_code",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "op_operand",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "numeric_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "op_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "op_code",
+          "named": true
+        },
+        {
+          "type": "op_operand",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "parenthesized_expression",
@@ -1586,6 +1709,10 @@
         },
         {
           "type": "continue_statement",
+          "named": true
+        },
+        {
+          "type": "data_definition",
           "named": true
         },
         {
@@ -1911,6 +2038,21 @@
     "type": "unit_fractional_type",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "untyped_data",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "primary_expression",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "uu_indexed_subscript",
@@ -2579,6 +2721,58 @@
     "named": false
   },
   {
+    "type": "adc",
+    "named": false
+  },
+  {
+    "type": "alr",
+    "named": false
+  },
+  {
+    "type": "anc",
+    "named": false
+  },
+  {
+    "type": "and",
+    "named": false
+  },
+  {
+    "type": "arr",
+    "named": false
+  },
+  {
+    "type": "asl",
+    "named": false
+  },
+  {
+    "type": "axs",
+    "named": false
+  },
+  {
+    "type": "bcc",
+    "named": false
+  },
+  {
+    "type": "bcs",
+    "named": false
+  },
+  {
+    "type": "beq",
+    "named": false
+  },
+  {
+    "type": "bit",
+    "named": false
+  },
+  {
+    "type": "bmi",
+    "named": false
+  },
+  {
+    "type": "bne",
+    "named": false
+  },
+  {
     "type": "bool_type",
     "named": true
   },
@@ -2587,7 +2781,23 @@
     "named": true
   },
   {
+    "type": "bpl",
+    "named": false
+  },
+  {
     "type": "break",
+    "named": false
+  },
+  {
+    "type": "brk",
+    "named": false
+  },
+  {
+    "type": "bvc",
+    "named": false
+  },
+  {
+    "type": "bvs",
     "named": false
   },
   {
@@ -2607,11 +2817,39 @@
     "named": false
   },
   {
+    "type": "clc",
+    "named": false
+  },
+  {
+    "type": "cld",
+    "named": false
+  },
+  {
+    "type": "cli",
+    "named": false
+  },
+  {
+    "type": "clv",
+    "named": false
+  },
+  {
+    "type": "cmp",
+    "named": false
+  },
+  {
     "type": "comment",
     "named": true
   },
   {
     "type": "continue",
+    "named": false
+  },
+  {
+    "type": "cpx",
+    "named": false
+  },
+  {
+    "type": "cpy",
     "named": false
   },
   {
@@ -2623,7 +2861,23 @@
     "named": false
   },
   {
+    "type": "dcp",
+    "named": false
+  },
+  {
+    "type": "dec",
+    "named": false
+  },
+  {
     "type": "default",
+    "named": false
+  },
+  {
+    "type": "dex",
+    "named": false
+  },
+  {
+    "type": "dey",
     "named": false
   },
   {
@@ -2648,6 +2902,10 @@
   },
   {
     "type": "employs vars",
+    "named": false
+  },
+  {
+    "type": "eor",
     "named": false
   },
   {
@@ -2687,11 +2945,55 @@
     "named": false
   },
   {
+    "type": "ign",
+    "named": false
+  },
+  {
+    "type": "inc",
+    "named": false
+  },
+  {
+    "type": "inx",
+    "named": false
+  },
+  {
+    "type": "iny",
+    "named": false
+  },
+  {
     "type": "irq",
     "named": false
   },
   {
+    "type": "isc",
+    "named": false
+  },
+  {
+    "type": "jmp",
+    "named": false
+  },
+  {
+    "type": "jsr",
+    "named": false
+  },
+  {
     "type": "label",
+    "named": false
+  },
+  {
+    "type": "lax",
+    "named": false
+  },
+  {
+    "type": "lda",
+    "named": false
+  },
+  {
+    "type": "ldx",
+    "named": false
+  },
+  {
+    "type": "ldy",
     "named": false
   },
   {
@@ -2701,6 +3003,10 @@
   {
     "type": "line_continuation",
     "named": true
+  },
+  {
+    "type": "lsr",
+    "named": false
   },
   {
     "type": "max",
@@ -2727,11 +3033,19 @@
     "named": false
   },
   {
+    "type": "nop",
+    "named": false
+  },
+  {
     "type": "numeric_literal",
     "named": true
   },
   {
     "type": "omni",
+    "named": false
+  },
+  {
+    "type": "ora",
     "named": false
   },
   {
@@ -2744,6 +3058,22 @@
   },
   {
     "type": "pbz",
+    "named": false
+  },
+  {
+    "type": "pha",
+    "named": false
+  },
+  {
+    "type": "php",
+    "named": false
+  },
+  {
+    "type": "pla",
+    "named": false
+  },
+  {
+    "type": "plp",
     "named": false
   },
   {
@@ -2775,11 +3105,71 @@
     "named": false
   },
   {
+    "type": "rla",
+    "named": false
+  },
+  {
     "type": "rlz",
     "named": false
   },
   {
+    "type": "rol",
+    "named": false
+  },
+  {
+    "type": "ror",
+    "named": false
+  },
+  {
+    "type": "rra",
+    "named": false
+  },
+  {
+    "type": "rti",
+    "named": false
+  },
+  {
+    "type": "rts",
+    "named": false
+  },
+  {
+    "type": "sax",
+    "named": false
+  },
+  {
+    "type": "sbc",
+    "named": false
+  },
+  {
+    "type": "sec",
+    "named": false
+  },
+  {
+    "type": "sed",
+    "named": false
+  },
+  {
+    "type": "sei",
+    "named": false
+  },
+  {
     "type": "sizeof",
+    "named": false
+  },
+  {
+    "type": "skb",
+    "named": false
+  },
+  {
+    "type": "slo",
+    "named": false
+  },
+  {
+    "type": "sre",
+    "named": false
+  },
+  {
+    "type": "sta",
     "named": false
   },
   {
@@ -2791,11 +3181,43 @@
     "named": false
   },
   {
+    "type": "stx",
+    "named": false
+  },
+  {
+    "type": "sty",
+    "named": false
+  },
+  {
     "type": "swap",
     "named": false
   },
   {
     "type": "switch",
+    "named": false
+  },
+  {
+    "type": "tax",
+    "named": false
+  },
+  {
+    "type": "tay",
+    "named": false
+  },
+  {
+    "type": "tsx",
+    "named": false
+  },
+  {
+    "type": "txa",
+    "named": false
+  },
+  {
+    "type": "txs",
+    "named": false
+  },
+  {
+    "type": "tya",
     "named": false
   },
   {
@@ -2812,6 +3234,14 @@
   },
   {
     "type": "write",
+    "named": false
+  },
+  {
+    "type": "x",
+    "named": false
+  },
+  {
+    "type": "y",
     "named": false
   },
   {

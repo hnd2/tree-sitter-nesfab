@@ -118,6 +118,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "data_definition"
+        },
+        {
+          "type": "SYMBOL",
           "name": "charmap_definition"
         },
         {
@@ -3267,88 +3271,44 @@
       ]
     },
     "data_definition": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "omni"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "data"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "group_identifier"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "byte_block"
-        }
-      ]
-    },
-    "typed_data": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "type"
-        },
-        {
-          "type": "STRING",
-          "value": "("
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "numeric_literal"
-            },
-            {
-              "type": "REPEAT",
-              "content": {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": ","
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "numeric_literal"
-                  }
-                ]
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "omni"
+              },
+              {
+                "type": "BLANK"
               }
+            ]
+          },
+          {
+            "type": "STRING",
+            "value": "data"
+          },
+          {
+            "type": "FIELD",
+            "name": "name",
+            "content": {
+              "type": "SYMBOL",
+              "name": "group_identifier"
             }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
-    },
-    "untyped_data": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "("
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "constant_definition"
+            }
+          }
+        ]
+      }
     },
     "charmap_definition": {
       "type": "SEQ",
@@ -4240,6 +4200,50 @@
         }
       ]
     },
+    "constant_definition": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "primary_expression"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "]"
+        },
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "byte_block"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "modifier"
+          }
+        }
+      ]
+    },
     "byte_block": {
       "type": "SEQ",
       "members": [
@@ -4250,8 +4254,29 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "SYMBOL",
-            "name": "_byte_block_statement"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "type_cast"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "zero_initialization"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "array_initialization"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "untyped_data"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "op_statement"
+              }
+            ]
           }
         },
         {
@@ -4260,12 +4285,464 @@
         }
       ]
     },
-    "_byte_block_statement": {
-      "type": "CHOICE",
+    "untyped_data": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "SYMBOL",
+          "name": "primary_expression"
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
+    "op_statement": {
+      "type": "SEQ",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "file_expression"
+          "name": "op_code"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "op_operand"
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "op_operand"
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "op_operand"
+                },
+                {
+                  "type": "STRING",
+                  "value": ","
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "x"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "y"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "op_operand"
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                },
+                {
+                  "type": "STRING",
+                  "value": ","
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "x"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "y"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "op_operand"
+                },
+                {
+                  "type": "STRING",
+                  "value": ","
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "x"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "y"
+                    }
+                  ]
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "op_operand": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "#"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "numeric_literal"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        }
+      ]
+    },
+    "op_code": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "adc"
+        },
+        {
+          "type": "STRING",
+          "value": "and"
+        },
+        {
+          "type": "STRING",
+          "value": "asl"
+        },
+        {
+          "type": "STRING",
+          "value": "bcc"
+        },
+        {
+          "type": "STRING",
+          "value": "bcs"
+        },
+        {
+          "type": "STRING",
+          "value": "beq"
+        },
+        {
+          "type": "STRING",
+          "value": "bit"
+        },
+        {
+          "type": "STRING",
+          "value": "bmi"
+        },
+        {
+          "type": "STRING",
+          "value": "bne"
+        },
+        {
+          "type": "STRING",
+          "value": "bpl"
+        },
+        {
+          "type": "STRING",
+          "value": "brk"
+        },
+        {
+          "type": "STRING",
+          "value": "bvc"
+        },
+        {
+          "type": "STRING",
+          "value": "bvs"
+        },
+        {
+          "type": "STRING",
+          "value": "clc"
+        },
+        {
+          "type": "STRING",
+          "value": "cld"
+        },
+        {
+          "type": "STRING",
+          "value": "cli"
+        },
+        {
+          "type": "STRING",
+          "value": "clv"
+        },
+        {
+          "type": "STRING",
+          "value": "cmp"
+        },
+        {
+          "type": "STRING",
+          "value": "cpx"
+        },
+        {
+          "type": "STRING",
+          "value": "cpy"
+        },
+        {
+          "type": "STRING",
+          "value": "dec"
+        },
+        {
+          "type": "STRING",
+          "value": "dex"
+        },
+        {
+          "type": "STRING",
+          "value": "dey"
+        },
+        {
+          "type": "STRING",
+          "value": "eor"
+        },
+        {
+          "type": "STRING",
+          "value": "inc"
+        },
+        {
+          "type": "STRING",
+          "value": "inx"
+        },
+        {
+          "type": "STRING",
+          "value": "iny"
+        },
+        {
+          "type": "STRING",
+          "value": "jmp"
+        },
+        {
+          "type": "STRING",
+          "value": "jsr"
+        },
+        {
+          "type": "STRING",
+          "value": "lda"
+        },
+        {
+          "type": "STRING",
+          "value": "ldx"
+        },
+        {
+          "type": "STRING",
+          "value": "ldy"
+        },
+        {
+          "type": "STRING",
+          "value": "lsr"
+        },
+        {
+          "type": "STRING",
+          "value": "nop"
+        },
+        {
+          "type": "STRING",
+          "value": "ora"
+        },
+        {
+          "type": "STRING",
+          "value": "pha"
+        },
+        {
+          "type": "STRING",
+          "value": "php"
+        },
+        {
+          "type": "STRING",
+          "value": "pla"
+        },
+        {
+          "type": "STRING",
+          "value": "plp"
+        },
+        {
+          "type": "STRING",
+          "value": "rol"
+        },
+        {
+          "type": "STRING",
+          "value": "ror"
+        },
+        {
+          "type": "STRING",
+          "value": "rti"
+        },
+        {
+          "type": "STRING",
+          "value": "rts"
+        },
+        {
+          "type": "STRING",
+          "value": "sbc"
+        },
+        {
+          "type": "STRING",
+          "value": "sec"
+        },
+        {
+          "type": "STRING",
+          "value": "sed"
+        },
+        {
+          "type": "STRING",
+          "value": "sei"
+        },
+        {
+          "type": "STRING",
+          "value": "sta"
+        },
+        {
+          "type": "STRING",
+          "value": "stx"
+        },
+        {
+          "type": "STRING",
+          "value": "sty"
+        },
+        {
+          "type": "STRING",
+          "value": "tax"
+        },
+        {
+          "type": "STRING",
+          "value": "tay"
+        },
+        {
+          "type": "STRING",
+          "value": "tsx"
+        },
+        {
+          "type": "STRING",
+          "value": "txa"
+        },
+        {
+          "type": "STRING",
+          "value": "txs"
+        },
+        {
+          "type": "STRING",
+          "value": "tya"
+        },
+        {
+          "type": "STRING",
+          "value": "lax"
+        },
+        {
+          "type": "STRING",
+          "value": "axs"
+        },
+        {
+          "type": "STRING",
+          "value": "anc"
+        },
+        {
+          "type": "STRING",
+          "value": "alr"
+        },
+        {
+          "type": "STRING",
+          "value": "arr"
+        },
+        {
+          "type": "STRING",
+          "value": "sax"
+        },
+        {
+          "type": "STRING",
+          "value": "skb"
+        },
+        {
+          "type": "STRING",
+          "value": "ign"
+        },
+        {
+          "type": "STRING",
+          "value": "dcp"
+        },
+        {
+          "type": "STRING",
+          "value": "isc"
+        },
+        {
+          "type": "STRING",
+          "value": "rla"
+        },
+        {
+          "type": "STRING",
+          "value": "rra"
+        },
+        {
+          "type": "STRING",
+          "value": "slo"
+        },
+        {
+          "type": "STRING",
+          "value": "sre"
         }
       ]
     },

@@ -54,6 +54,7 @@
    "chrrom"
    "continue"
    "ct"
+   "data"
    "default"
    "do"
    "else"
@@ -82,6 +83,7 @@
    "while"
    "write"
    (modifier)
+   (op_code)
 ] @keyword
 
 [

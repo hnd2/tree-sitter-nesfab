@@ -1,12 +1,18 @@
-fn example()
-    U some_u = 10
-    SS some_ss = SS(some_u)    // An explicit cast to SS
-    UUF some_uuf = UUF(some_u) // An explicit cast to UUF
+data /some_group
+    [] some_data
+        U(10)
+        UU(2000)
+        U[3](1,2,3)
 
-U()          // equivalent to U(0)
-UF()         // equivalent to U(0.0)
-U[3]()       // equivalent to U[3](0, 0, 0)
-SomeStruct() // equivalent to SomeStruct(0, 0)
+data /some_group
+    [] some_data
+        (U[3](1,2,3))
+        (UU(300).x)
 
-S[2](50) // equivalent to S[2](50, 50)
-U[5](11) // equivalent to U[5](11, 11, 11, 11, 11)
+data /some_group
+    [] some_data
+        lda #30
+        sta $2003
+        ldy #0
+        lda ($2000), y
+        sta ($00, x)
