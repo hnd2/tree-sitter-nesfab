@@ -51,6 +51,7 @@ module.exports = grammar({
     [$.expression, $.typed_element_array_type],
     [$.data_definition],
     [$.file_expression],
+    [$.asm_parenthesized_expression, $.asm_op_statement],
   ],
   externals: ($) => [$._indent, $._dedent, $._newline],
   word: ($) => $.identifier,
@@ -86,6 +87,7 @@ module.exports = grammar({
         $.data_definition,
         $.charmap_definition,
         $.function_definition,
+        $.asm_function_definition,
         $.if_statement,
         $.while_statement,
         $.for_statement,
@@ -415,6 +417,20 @@ module.exports = grammar({
         repeat($.modifier),
         $.statement_block,
       ),
+    asm_function_definition: ($) =>
+      seq(
+        "asm",
+        "fn",
+        $.identifier,
+        "(",
+        optional(commaSep1($.function_argument)),
+        ")",
+        optional($.type),
+        repeat($.modifier),
+        optional($.vars_definition),
+        $.byte_block,
+      ),
+
     function_argument: ($) =>
       seq($.type, optional($.group_identifier), $.identifier),
     if_statement: ($) =>
@@ -520,25 +536,90 @@ module.exports = grammar({
         $._indent,
         // typed_data is same as type_cast
         repeat(
-          choice($.type_cast_or_initialization, $.untyped_data, $.op_statement),
+          choice(
+            $.type_cast_or_initialization,
+            $.untyped_data,
+            $.asm_op_statement,
+            $.asm_if_statement,
+            $.asm_switch_statement,
+            $.asm_goto_statement,
+            $.asm_goto_mode_statement,
+            $.asm_label_statement,
+            $.asm_call,
+            "nmi",
+          ),
         ),
         $._dedent,
       ),
     untyped_data: ($) => seq("(", $.expression, ")"),
-    op_statement: ($) =>
-      seq(
-        $.op_code,
-        choice(
-          $.op_operand,
-          seq("(", $.op_operand, ")"),
-          seq($.op_operand, ",", choice("x", "y")),
-          seq("(", $.op_operand, ")", ",", choice("x", "y")),
-          seq("(", $.op_operand, ",", choice("x", "y"), ")"),
+    asm_expression: ($) =>
+      choice(
+        $.identifier,
+        $.numeric_literal,
+        $.system_literal,
+        $.ppu_literal,
+        $.asm_unary_operator,
+        $.asm_binary_operator,
+        $.asm_parenthesized_expression,
+        $.asm_member_access,
+      ),
+    asm_unary_operator: ($) =>
+      choice(
+        ...[
+          ["&", PREC.unary_hardware_address],
+          ["#", PREC.unary_plus],
+        ].map(([operator, precedence]) =>
+          prec.left(precedence, seq(operator, $.asm_expression)),
         ),
       ),
-    op_operand: ($) =>
-      choice(seq(optional("#"), $.numeric_literal), $.identifier),
-    op_code: (_) =>
+    asm_binary_operator: ($) =>
+      choice(
+        ...[
+          ["+", PREC.binary_add, "left"],
+          ["-", PREC.binary_subtract, "left"],
+        ].map(([operator, precedence, associativity]) =>
+          (associativity == "right" ? prec.right : prec.left)(
+            precedence,
+            seq($.asm_expression, operator, $.asm_expression),
+          ),
+        ),
+      ),
+    asm_parenthesized_expression: ($) => seq("(", $.asm_expression, ")"),
+    asm_comparison_operator: ($) =>
+      choice(
+        ...[
+          ["<", PREC.binary_less_than],
+          ["<=", PREC.binary_less_than_or_equal],
+          [">", PREC.binary_greater_than],
+          [">=", PREC.binary_greater_than_or_equal],
+          ["==", PREC.binary_equal_to],
+          ["!=", PREC.binary_not_equal_to],
+          ["&&", PREC.binary_logical_and],
+          ["||", PREC.binary_logical_or],
+        ].map(([operator, precedence, associativity]) =>
+          prec.left(
+            precedence,
+            seq($.asm_expression, operator, $.asm_expression),
+          ),
+        ),
+      ),
+    asm_member_access: ($) =>
+      prec.left(PREC.subscript, seq($.asm_expression, ".", $.identifier)),
+    asm_op_statement: ($) =>
+      seq(
+        $.asm_op_code,
+        optional(
+          choice(
+            $.asm_expression,
+            seq("(", $.asm_expression, ")"),
+            seq($.asm_expression, ",", choice("x", "y")),
+            seq("(", $.asm_expression, ")", ",", choice("x", "y")),
+            seq("(", $.asm_expression, ",", choice("x", "y"), ")"),
+          ),
+        ),
+        $._newline,
+      ),
+    asm_op_code: (_) =>
       choice(
         "adc",
         "and",
@@ -611,6 +692,33 @@ module.exports = grammar({
         "slo",
         "sre",
       ),
+    asm_if_statement: ($) =>
+      seq(
+        "if",
+        choice($.asm_comparison_operator, $.asm_expression),
+        $.byte_block,
+        repeat($.asm_else_if_clause),
+        optional($.asm_else_clause),
+      ),
+    asm_else_if_clause: ($) =>
+      seq(
+        "else",
+        "if",
+        choice($.asm_comparison_operator, $.asm_expression),
+        $.byte_block,
+      ),
+    asm_else_clause: ($) => seq("else", $.byte_block),
+    asm_switch_statement: ($) => seq("switch", $.identifier),
+    asm_goto_statement: ($) => seq("goto", $.identifier),
+    asm_goto_mode_statement: ($) =>
+      seq("goto mode", $.identifier, repeat($.modifier)),
+    asm_label_statement: ($) =>
+      seq(
+        choice(seq("label", $.identifier), "default"),
+        optional($.byte_block),
+      ),
+
+    asm_call: ($) => seq("fn", $.identifier),
 
     // types
     type: ($) =>

@@ -1,7 +1,5 @@
 # TODO
 - [ ] grammar
-  - [ ] asm
-  - [ ] field, inline
-
+- [ ] highlight
 - [ ] readme
 - [ ] test

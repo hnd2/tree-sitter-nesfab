@@ -85,28 +85,28 @@ fn ppu_reset_mid_scroll(U x, U y, U nt)
     ppu_set_mid_scroll(x, y, nt)
 
 // Polls 'PPUSTATUS' until any bit of 'flag' is set.
-//asm fn ppu_await_status_set(U flag)
-//: +static
-//: +zero_page
-//: employs
-//    default
-//        lda &flag
-//    label loop
-//        bit PPUSTATUS
-//        beq loop
-//        rts
+asm fn ppu_await_status_set(U flag)
+: +static
+: +zero_page
+: employs
+    default
+        lda &flag
+    label loop
+        bit PPUSTATUS
+        beq loop
+        rts
 
 // Polls 'PPUSTATUS' until no bit of 'flag' is set.
-//asm fn ppu_await_status_clear(U flag)
-//: +static
-//: +zero_page
-//: employs
-//    default
-//        lda &flag
-//    label loop
-//        bit PPUSTATUS
-//        bne loop
-//        rts
+asm fn ppu_await_status_clear(U flag)
+: +static
+: +zero_page
+: employs
+    default
+        lda &flag
+    label loop
+        bit PPUSTATUS
+        bne loop
+        rts
 
 // Polls 'PPUSTATUS' until no bit of 'flag' is set,
 // then polls 'PPUSTATUS' until any bit of 'flag' is set.
@@ -262,80 +262,80 @@ fn poll_pads()
 // NOTE: This supports the NES Four Score, but no other expansion.
 //       See "famicom.fab" if you need to support Famicom expansion controllers / Hori!
 // NOTE: This correctly handles the DMC glitch.
-//asm fn ppu_upload_oam_poll_pads(U oam_offset)
-//: employs
-//: +align
-//: +static
-//    default
-//        lda &oam_offset
-//        sta OAMADDR
-//        lda #(&oam).b
-//        sta OAMDMA
-//    label done_oam
-//        ldx #1
-//        stx &raw_pads+0
-//        stx $4016
-//        dex
-//        stx $4016
-//    label loop
-//        if __controllers > 1
-//            lda $4017
-//            lsr
-//            rol &raw_pads+1, x
-//        lda $4016
-//        lsr
-//        rol &raw_pads+0
-//        bcc loop
+asm fn ppu_upload_oam_poll_pads(U oam_offset)
+: employs
+: +align
+: +static
+    default
+        lda &oam_offset
+        sta OAMADDR
+        lda #(&oam).b
+        sta OAMDMA
+    label done_oam
+        ldx #1
+        stx &raw_pads+0
+        stx $4016
+        dex
+        stx $4016
+    label loop
+        if __controllers > 1
+            lda $4017
+            lsr
+            rol &raw_pads+1, x
+        lda $4016
+        lsr
+        rol &raw_pads+0
+        bcc loop
 
-//        if __controllers > 2
-//            lda #1
-//            sta &raw_pads+2
-//    label loop_four_score
-//        if __controllers > 2
-//            if __controllers > 3
-//                lda $4017
-//                lsr
-//                rol &raw_pads+3, x
-//            lda $4016
-//            lsr
-//            rol &raw_pads+2
-//            bcc loop_four_score
+        if __controllers > 2
+            lda #1
+            sta &raw_pads+2
+    label loop_four_score
+        if __controllers > 2
+            if __controllers > 3
+                lda $4017
+                lsr
+                rol &raw_pads+3, x
+            lda $4016
+            lsr
+            rol &raw_pads+2
+            bcc loop_four_score
 
-//            // Check to make sure the four-score is enabled:
-//            if __controllers > 3
-//                lda $4017
-//                ora $4017
-//                eor $4017
-//            else
-//                lda $4016
-//                ora $4016
-//                ora $4016
-//                eor $4016
-//            lsr
-//            bcs done_four_score
-//            if __controllers > 3
-//                stx &raw_pads+3
-//            stx &raw_pads+2
-//    label done_four_score
+            // Check to make sure the four-score is enabled:
+            if __controllers > 3
+                lda $4017
+                ora $4017
+                eor $4017
+            else
+                lda $4016
+                ora $4016
+                ora $4016
+                eor $4016
+            lsr
+            bcs done_four_score
+            if __controllers > 3
+                stx &raw_pads+3
+            stx &raw_pads+2
+    label done_four_score
 
-//        rts
+        rts
 
 // Polls a single pad, returning the result.
-//asm fn poll_pad(U pad_id) U
-//: employs
-//    default
-//        ldx #1
-//        stx &return
-//        stx $4016
-//        dex
-//        stx $4016
-//        ldx &pad_id
-//    label loop
-//        lda $4016, x
-//        lsr
-//        rol &return
-//        bcc loop
-//        rts
+asm fn poll_pad(U pad_id) U
+: employs
+    default
+        ldx #1
+        stx &return
+        stx $4016
+        dex
+        stx $4016
+        ldx &pad_id
+    label loop
+        lda $4016, x
+        lsr
+        rol &return
+        bcc loop
+        rts
 
 // Polls a single pad, returning the result.
 // NOTE: This version correctly handles the DMC glitch.
