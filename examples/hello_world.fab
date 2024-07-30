@@ -1,9 +1,12 @@
-ct Int uu_size = sizeof UU
-ct Int expr_size = sizeof(1 + 2 + 3)
+fn example()
+    U some_u = 10
+    SS some_ss = SS(some_u)    // An explicit cast to SS
+    UUF some_uuf = UUF(some_u) // An explicit cast to UUF
 
-ct Int array_len = len UU[10]
-ct Int expr_len = len(U[10](3))
+U()          // equivalent to U(0)
+UF()         // equivalent to U(0.0)
+U[3]()       // equivalent to U[3](0, 0, 0)
+SomeStruct() // equivalent to SomeStruct(0, 0)
 
-UU positive = abs(SS(-10))
-SS smallest = min(10, 20, 30)
-SS largest = max(10, 20, 30)
+S[2](50) // equivalent to S[2](50, 50)
+U[5](11) // equivalent to U[5](11, 11, 11, 11, 11)

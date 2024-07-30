@@ -144,6 +144,7 @@ module.exports = grammar({
         $.minmax_expression,
         $.type_cast,
         $.zero_initialization,
+        $.array_initialization,
         $.banked_pointer_initialization,
         $.read,
         $.hardware_read,
@@ -381,6 +382,11 @@ module.exports = grammar({
         ),
       ),
     zero_initialization: ($) => prec.left(PREC.call, seq($.type, "()")),
+    array_initialization: ($) =>
+      prec.left(
+        PREC.call,
+        seq($.array_type, "(", commaSep1($.primary_expression), ")"),
+      ),
     banked_pointer_initialization: ($) =>
       prec.left(
         PREC.call,

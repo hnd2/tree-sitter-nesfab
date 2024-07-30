@@ -20,6 +20,25 @@
     "fields": {}
   },
   {
+    "type": "array_initialization",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "array_type",
+          "named": true
+        },
+        {
+          "type": "primary_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "array_type",
     "named": true,
     "fields": {},
@@ -1317,6 +1336,10 @@
       "types": [
         {
           "type": "abs_expression",
+          "named": true
+        },
+        {
+          "type": "array_initialization",
           "named": true
         },
         {

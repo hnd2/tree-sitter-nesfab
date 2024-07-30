@@ -396,6 +396,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "array_initialization"
+        },
+        {
+          "type": "SYMBOL",
           "name": "banked_pointer_initialization"
         },
         {
@@ -2249,6 +2253,52 @@
           {
             "type": "STRING",
             "value": "()"
+          }
+        ]
+      }
+    },
+    "array_initialization": {
+      "type": "PREC_LEFT",
+      "value": 5,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "array_type"
+          },
+          {
+            "type": "STRING",
+            "value": "("
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "primary_expression"
+              },
+              {
+                "type": "REPEAT",
+                "content": {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": ","
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "primary_expression"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "type": "STRING",
+            "value": ")"
           }
         ]
       }
