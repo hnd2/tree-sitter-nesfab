@@ -20,6 +20,9 @@
 (audio_expression
     "audio" @function.special
 )
+(asm_file_statement
+    "file" @function.special
+)
 
 [
     (boolean_literal)
@@ -46,6 +49,7 @@
 
 [
     "abs"
+    "asm"
     "break"
     "case"
     "charmap"

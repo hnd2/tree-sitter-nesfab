@@ -548,6 +548,7 @@ module.exports = grammar({
             $.asm_goto_mode_statement,
             $.asm_label_statement,
             $.asm_call,
+            $.asm_file_statement,
             "nmi",
           ),
         ),
@@ -558,6 +559,7 @@ module.exports = grammar({
       choice(
         $.identifier,
         $.numeric_literal,
+        $.string_literal,
         $.system_literal,
         $.ppu_literal,
         $.asm_unary_operator,
@@ -719,8 +721,17 @@ module.exports = grammar({
         choice(seq("label", $.identifier), "default"),
         optional($.byte_block),
       ),
-
     asm_call: ($) => seq("fn", $.identifier),
+    asm_file_statement: ($) =>
+      seq(
+        "file",
+        "(",
+        $.file_target,
+        ",",
+        commaSep1($.asm_expression),
+        ")",
+        repeat($.modifier),
+      ),
 
     // types
     type: ($) =>

@@ -162,7 +162,34 @@
           "named": true
         },
         {
+          "type": "string_literal",
+          "named": true
+        },
+        {
           "type": "system_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "asm_file_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "asm_expression",
+          "named": true
+        },
+        {
+          "type": "file_target",
+          "named": true
+        },
+        {
+          "type": "modifier",
           "named": true
         }
       ]
@@ -501,6 +528,10 @@
       "types": [
         {
           "type": "asm_call",
+          "named": true
+        },
+        {
+          "type": "asm_file_statement",
           "named": true
         },
         {
