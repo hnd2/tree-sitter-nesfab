@@ -177,6 +177,10 @@
       "required": true,
       "types": [
         {
+          "type": "asm_function_keyword",
+          "named": true
+        },
+        {
           "type": "byte_block",
           "named": true
         },
@@ -202,6 +206,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "asm_function_keyword",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "asm_goto_mode_statement",

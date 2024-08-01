@@ -408,7 +408,7 @@ module.exports = grammar({
       seq("chrrom", optional($.expression), $.byte_block),
     function_definition: ($) =>
       seq(
-        choice(seq(optional("ct"), "fn"), "mode", "nmi", "irq"),
+        $.function_keyword,
         $.identifier,
         "(",
         optional(commaSep1($.function_argument)),
@@ -417,10 +417,13 @@ module.exports = grammar({
         repeat($.modifier),
         $.statement_block,
       ),
+    function_keyword: ($) =>
+      choice(seq(optional("ct"), "fn"), "mode", "nmi", "irq"),
+    function_argument: ($) =>
+      seq($.type, optional($.group_identifier), $.identifier),
     asm_function_definition: ($) =>
       seq(
-        "asm",
-        "fn",
+        $.asm_function_keyword,
         $.identifier,
         "(",
         optional(commaSep1($.function_argument)),
@@ -430,9 +433,8 @@ module.exports = grammar({
         optional($.vars_definition),
         $.byte_block,
       ),
+    asm_function_keyword: ($) => seq("asm", "fn"),
 
-    function_argument: ($) =>
-      seq($.type, optional($.group_identifier), $.identifier),
     if_statement: ($) =>
       seq(
         "if",
