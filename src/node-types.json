@@ -981,6 +981,10 @@
           "named": true
         },
         {
+          "type": "function_keyword",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },
@@ -998,6 +1002,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "function_keyword",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "goto_mode_modifier",
