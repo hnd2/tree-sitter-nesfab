@@ -409,7 +409,7 @@ module.exports = grammar({
     function_definition: ($) =>
       seq(
         $.function_keyword,
-        $.identifier,
+        field("name", $.identifier),
         "(",
         optional(commaSep1($.function_argument)),
         ")",
@@ -424,7 +424,7 @@ module.exports = grammar({
     asm_function_definition: ($) =>
       seq(
         $.asm_function_keyword,
-        $.identifier,
+        field("name", $.identifier),
         "(",
         optional(commaSep1($.function_argument)),
         ")",
