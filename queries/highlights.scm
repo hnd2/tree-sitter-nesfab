@@ -4,6 +4,9 @@
 (function_definition
     (identifier) @function
 )
+(asm_function_definition
+    (identifier) @function
+)
 (call
     (identifier) @function
 )
