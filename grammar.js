@@ -298,7 +298,12 @@ module.exports = grammar({
     call: ($) =>
       prec.left(
         PREC.call,
-        seq($.identifier, "(", optional(commaSep1($.expression)), ")"),
+        seq(
+          field("name", $.identifier),
+          "(",
+          optional(commaSep1($.expression)),
+          ")",
+        ),
       ),
     type_cast_or_initialization: ($) =>
       seq($.type, "(", optional(commaSep1($.expression)), ")"),
