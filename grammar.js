@@ -408,14 +408,18 @@ module.exports = grammar({
       seq("chrrom", optional($.expression), $.byte_block),
     function_definition: ($) =>
       seq(
+        field("signature", $.function_signature),
+        repeat($.modifier),
+        $.statement_block,
+      ),
+    function_signature: ($) =>
+      seq(
         $.function_keyword,
         field("name", $.identifier),
         "(",
         optional(commaSep1($.function_argument)),
         ")",
         optional($.type),
-        repeat($.modifier),
-        $.statement_block,
       ),
     function_keyword: ($) =>
       choice(seq(optional("ct"), "fn"), "mode", "nmi", "irq"),
@@ -423,15 +427,19 @@ module.exports = grammar({
       seq($.type, optional($.group_identifier), $.identifier),
     asm_function_definition: ($) =>
       seq(
+        field("signature", $.asm_function_signature),
+        repeat($.modifier),
+        optional($.vars_definition),
+        $.byte_block,
+      ),
+    asm_function_signature: ($) =>
+      seq(
         $.asm_function_keyword,
         field("name", $.identifier),
         "(",
         optional(commaSep1($.function_argument)),
         ")",
         optional($.type),
-        repeat($.modifier),
-        optional($.vars_definition),
-        $.byte_block,
       ),
     asm_function_keyword: ($) => seq("asm", "fn"),
 

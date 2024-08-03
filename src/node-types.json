@@ -199,6 +199,45 @@
     "type": "asm_function_definition",
     "named": true,
     "fields": {
+      "signature": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "asm_function_signature",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "byte_block",
+          "named": true
+        },
+        {
+          "type": "modifier",
+          "named": true
+        },
+        {
+          "type": "vars_definition",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "asm_function_keyword",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "asm_function_signature",
+    "named": true,
+    "fields": {
       "name": {
         "multiple": false,
         "required": true,
@@ -219,32 +258,15 @@
           "named": true
         },
         {
-          "type": "byte_block",
-          "named": true
-        },
-        {
           "type": "function_argument",
-          "named": true
-        },
-        {
-          "type": "modifier",
           "named": true
         },
         {
           "type": "type",
           "named": true
-        },
-        {
-          "type": "vars_definition",
-          "named": true
         }
       ]
     }
-  },
-  {
-    "type": "asm_function_keyword",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "asm_goto_mode_statement",
@@ -1010,6 +1032,41 @@
     "type": "function_definition",
     "named": true,
     "fields": {
+      "signature": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "function_signature",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "modifier",
+          "named": true
+        },
+        {
+          "type": "statement_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "function_keyword",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "function_signature",
+    "named": true,
+    "fields": {
       "name": {
         "multiple": false,
         "required": true,
@@ -1034,24 +1091,11 @@
           "named": true
         },
         {
-          "type": "modifier",
-          "named": true
-        },
-        {
-          "type": "statement_block",
-          "named": true
-        },
-        {
           "type": "type",
           "named": true
         }
       ]
     }
-  },
-  {
-    "type": "function_keyword",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "goto_mode_modifier",
