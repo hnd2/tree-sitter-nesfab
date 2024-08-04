@@ -375,17 +375,17 @@ module.exports = grammar({
     variable_definition: ($) =>
       seq(
         optional("ct"),
-        choice($.type, $.identifier),
-        optional($.group_identifier),
-        $.identifier,
+        field("type", choice($.type, $.identifier)),
+        field("group", optional($.group_identifier)),
+        field("name", $.identifier),
         optional(seq("=", $.expression)),
       ),
     struct_definition: ($) =>
-      seq("struct", $.identifier, $.variable_definition_block),
+      seq("struct", field("name", $.identifier), $.variable_definition_block),
     vars_definition: ($) =>
       seq(
         "vars",
-        optional($.group_identifier),
+        field("group", optional($.group_identifier)),
         repeat($.modifier),
         seq(
           $._indent,
@@ -397,13 +397,13 @@ module.exports = grammar({
       seq(
         optional("omni"),
         "data",
-        $.group_identifier,
+        field("group", $.group_identifier),
         repeat($.constant_definition),
       ),
     charmap_definition: ($) =>
       seq(
         "charmap",
-        $.identifier,
+        field("name", $.identifier),
         "(",
         $.string_literal,
         optional(seq(",", $.character_literal)),

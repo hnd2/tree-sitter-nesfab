@@ -1,72 +1,74 @@
-vars
-    // Player variables:
-    SS px = 128
-    SS py = 120
+asm fn ppu_upload_oam_poll_pads(U oam_offset)
+: employs
+: +align
+: +static
+    default
+        lda &oam_offset
+        sta OAMADDR
+        lda #(&oam).b
+        sta OAMDMA
+    label done_oam
+        ldx #1
+        stx &raw_pads+0
+        stx $4016
+        dex
+        stx $4016
+    label loop
+        if __controllers > 1
+            lda $4017
+            lsr
+            rol &raw_pads+1, x
+        lda $4016
+        lsr
+        rol &raw_pads+0
+        bcc loop
 
-    // Follower variables:
-    SSF fx = 128.0
-    SSF fy = 120.0
+        if __controllers > 2
+            lda #1
+            sta &raw_pads+2
+    label loop_four_score
+        if __controllers > 2
+            if __controllers > 3
+                lda $4017
+                lsr
+                rol &raw_pads+3, x
+            lda $4016
+            lsr
+            rol &raw_pads+2
+            bcc loop_four_score
 
-mode main()
-: nmi game_nmi
-    palette = example_palette
-    ppu_upload_palette()
-    {PPUCTRL}(PPUCTRL_NMI_ON)
+            // Check to make sure the four-score is enabled:
+            if __controllers > 3
+                lda $4017
+                ora $4017
+                eor $4017
+            else
+                lda $4016
+                ora $4016
+                ora $4016
+                eor $4016
+            lsr
+            bcs done_four_score
+            if __controllers > 3
+                stx &raw_pads+3
+            stx &raw_pads+2
+    label done_four_score
 
-    while true
-        nmi
-        update_pads()
-        move_player()
-        move_follower()
-        update_sprites()
+        rts
 
-fn move_player()
-    ct Int SPEED = 2
-
-    if pads[0].held & BUTTON_LEFT
-        px -= SPEED
-    else if pads[0].held & BUTTON_RIGHT
-        px += SPEED
-
-    if pads[0].held & BUTTON_UP
-        py -= SPEED
-    else if pads[0].held & BUTTON_DOWN
-        py += SPEED
-
-fn move_follower()
-    U dir = point_dir(SS(fx), SS(fy), px, py)
-    fx += cos(dir)
-    fy += sin(dir)
-
-fn update_sprites()
-    // Our stack index into OAM:
-    U o = 0
-
-    // Player:
-    if px.b == 0 && py.b == 0
-        set_oam(o, px.a, py.a - 1, $00, 0)
-        o += 4
-
-    // Follower:
-    if fx.b == 0 && fy.b == 0
-        set_oam(o, fx.a, fy.a - 1, $00, 1)
-        o += 4
-
-    // Clear the remainder of OAM
-    hide_oam(o)
-
-nmi game_nmi()
-    // Update OAM and poll the pads:
-    ppu_upload_oam_poll_pads(0)
-
-    // Turn on rendering:
-    {PPUMASK}(PPUMASK_SPR_ON | PPUMASK_NO_CLIP)
-
-    // Reset the scroll
-    ppu_reset_scroll(0, 0)
-
-fn foo(U x, U y) U
-    return 42
-
-chrrom
-    U[16]($FF)
+// Polls a single pad, returning the result.
+asm fn poll_pad(U pad_id) U
+: employs
+    default
+        ldx #1
+        stx &return
+        stx $4016
+        dex
+        stx $4016
+        ldx &pad_id
+    label loop
+        lda $4016, x
+        lsr
+        rol &return
+        bcc loop
+        rts
